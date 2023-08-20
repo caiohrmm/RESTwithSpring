@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
 import br.com.caiohenrique.exceptions.ExceptionResponse;
-import br.com.caiohenrique.exceptions.UnsupportedMathOperationException;
+import br.com.caiohenrique.exceptions.ResourceNotFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 // Concentrar tratamento espalhado em todos os controllers.
@@ -31,12 +31,12 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     }
 
 
-    @ExceptionHandler(UnsupportedMathOperationException.class)
+    @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseBody
-    public final ResponseEntity<ExceptionResponse> handleBadRequestExceptions(Exception ex, WebRequest request) {
+    public final ResponseEntity<ExceptionResponse> handleNotFoundExceptions(Exception ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(LocalDateTime.now(), ex.getMessage(),
                 request.getDescription(false));
-            return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
     }
 }
 
