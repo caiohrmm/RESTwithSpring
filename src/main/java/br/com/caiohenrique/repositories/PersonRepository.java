@@ -1,8 +1,8 @@
 package br.com.caiohenrique.repositories;
 
-import br.com.caiohenrique.model.Person;
+import br.com.caiohenrique.data.vo.v1.PersonVO;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 // A partir dessa interface consigo realizar todas as operacoes no meu banco
-public interface PersonRepository extends JpaRepository<Person, Long> {
+public interface PersonRepository extends JpaRepository<PersonVO, Long> {
 }
