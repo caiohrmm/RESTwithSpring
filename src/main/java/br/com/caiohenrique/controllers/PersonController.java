@@ -30,12 +30,12 @@ public class PersonController {
         return service.findById(id);
     }
 
-    @PostMapping(consumes = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_JSON}, produces = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
+    @PostMapping(consumes = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML}, produces = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
     public PersonVO createPerson(@RequestBody PersonVO personVO) {
         return service.createPerson(personVO);
     }
 
-    @PutMapping(consumes = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_JSON}, produces = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
+    @PutMapping(consumes = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML}, produces = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
     public PersonVO updatePerson(@RequestBody PersonVO personVO) {
         return service.updatePerson(personVO);
     }
