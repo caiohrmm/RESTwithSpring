@@ -11,7 +11,7 @@ import java.util.List;
 
 // Preciso sempre da anotação do Spring para reconhecer que essa é uma classe de controle do REST.
 @RestController
-@RequestMapping("/persons")
+@RequestMapping("/persons/v1")
 public class PersonController {
 
     @Autowired
