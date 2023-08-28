@@ -1,6 +1,6 @@
 package br.com.caiohenrique.services;
 
-import br.com.caiohenrique.data.vo.v1.PersonVO;
+import br.com.caiohenrique.data.valueobjects.v1.PersonVO;
 import br.com.caiohenrique.exceptions.ResourceNotFoundException;
 import br.com.caiohenrique.mapper.ModelMapper;
 import br.com.caiohenrique.model.Person;

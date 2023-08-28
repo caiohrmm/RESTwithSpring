@@ -1,6 +1,6 @@
 package br.com.caiohenrique.controllers;
 
-import br.com.caiohenrique.data.vo.v1.PersonVO;
+import br.com.caiohenrique.data.valueobjects.v1.PersonVO;
 import br.com.caiohenrique.services.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

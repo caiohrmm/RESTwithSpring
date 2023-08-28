@@ -1,6 +1,5 @@
 package br.com.caiohenrique.repositories;
 
-import br.com.caiohenrique.data.vo.v1.PersonVO;
 import br.com.caiohenrique.model.Person;
 import org.springframework.data.jpa.repository.JpaRepository;
 

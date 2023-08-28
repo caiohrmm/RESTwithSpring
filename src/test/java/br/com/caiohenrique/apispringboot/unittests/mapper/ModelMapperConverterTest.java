@@ -1,7 +1,7 @@
 package br.com.caiohenrique.apispringboot.unittests.mapper;
 
 import br.com.caiohenrique.apispringboot.unittests.mapper.mocks.MockPerson;
-import br.com.caiohenrique.data.vo.v1.PersonVO;
+import br.com.caiohenrique.data.valueobjects.v1.PersonVO;
 import br.com.caiohenrique.mapper.ModelMapper;
 import br.com.caiohenrique.model.Person;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,6 +1,6 @@
 package br.com.caiohenrique.apispringboot.unittests.mapper.mocks;
 
-import br.com.caiohenrique.data.vo.v1.PersonVO;
+import br.com.caiohenrique.data.valueobjects.v1.PersonVO;
 import br.com.caiohenrique.model.Person;
 
 import java.util.ArrayList;

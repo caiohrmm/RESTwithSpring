@@ -1,13 +1,14 @@
-package br.com.caiohenrique.data.vo.v1;
+package br.com.caiohenrique.data.valueobjects.v1;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.io.Serializable;
 import java.util.Objects;
 @JsonPropertyOrder({"id", "first_name", "gender", "address", "last_name"}) // Organiza a ordem
-public class PersonVO implements Serializable {
+public class PersonVO extends RepresentationModel implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Long id;
