@@ -1,5 +1,6 @@
 package br.com.caiohenrique.data.valueobjects.v1;
 
+import com.github.dozermapper.core.Mapping;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.io.Serializable;
@@ -8,6 +9,7 @@ import java.util.Objects;
 public class PersonVO extends RepresentationModel<PersonVO> implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @Mapping("id")
     private Long key;
 
     private String firstName;

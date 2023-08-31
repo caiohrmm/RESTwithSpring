@@ -3,6 +3,7 @@ package br.com.caiohenrique.services;
 import br.com.caiohenrique.controllers.PersonController;
 import br.com.caiohenrique.data.valueobjects.v1.PersonVO;
 import br.com.caiohenrique.exceptions.ResourceNotFoundException;
+import br.com.caiohenrique.mapper.DozerMapper;
 import br.com.caiohenrique.model.Person;
 import br.com.caiohenrique.repositories.PersonRepository;
 import org.modelmapper.ModelMapper;
@@ -24,15 +25,11 @@ public class PersonService {
     @Autowired
     private PersonRepository repository;
 
-    @Autowired
-    private ModelMapper modelMapper;
-
-
     // Find One Person
     public PersonVO findById(Long id) {
         logger.info("Finding one person...");
         var entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No records found for this ID!"));
-        return modelMapper.map(entity, PersonVO.class).add(linkTo(methodOn(PersonController.class).findById(id)).withSelfRel());
+        return DozerMapper.parseObject(entity, PersonVO.class).add(linkTo(methodOn(PersonController.class).findById(id)).withSelfRel());
     }
 
     // Find All Persons
@@ -40,9 +37,9 @@ public class PersonService {
         logger.info("Finding all persons...");
 
         // Irei criar um loop para adicionar os links para cada objeto da lista.
-        var persons = repository.findAll().stream().map(person -> modelMapper.map(person, PersonVO.class)).collect(Collectors.toList());
+        var persons = DozerMapper.parseListObjects(repository.findAll(), PersonVO.class);
 
-        persons.stream().forEach(person -> person.add(linkTo(methodOn(PersonController.class).findById(person.getKey())).withSelfRel()));
+        persons.forEach(person -> person.add(linkTo(methodOn(PersonController.class).findById(person.getKey())).withSelfRel()));
         return persons;
     }
 
@@ -51,8 +48,8 @@ public class PersonService {
         logger.info("Creating one person...");
 
         // Recebo um VO, preciso converter para entidade e depois que salvar passar para VO novamente.
-        var entity = modelMapper.map(personVO, Person.class);
-        var valueObject = modelMapper.map(repository.save(entity), PersonVO.class);
+        var entity = DozerMapper.parseObject(personVO, Person.class);
+        var valueObject = DozerMapper.parseObject(repository.save(entity), PersonVO.class);
         valueObject.add(linkTo(methodOn(PersonController.class).findById(valueObject.getKey())).withSelfRel());
         return valueObject;
     }
@@ -67,7 +64,7 @@ public class PersonService {
         entity.setAddress(personVO.getAddress());
         entity.setGender(personVO.getGender());
 
-        var valueObject = modelMapper.map(repository.save(entity), PersonVO.class);
+        var valueObject = DozerMapper.parseObject(repository.save(entity), PersonVO.class);
         valueObject.add(linkTo(methodOn(PersonController.class).findById(valueObject.getKey())).withSelfRel());
         return valueObject;
     }
