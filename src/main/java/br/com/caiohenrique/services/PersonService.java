@@ -2,6 +2,7 @@ package br.com.caiohenrique.services;
 
 import br.com.caiohenrique.controllers.PersonController;
 import br.com.caiohenrique.data.valueobjects.v1.PersonVO;
+import br.com.caiohenrique.exceptions.RequiredObjectIsNullException;
 import br.com.caiohenrique.exceptions.ResourceNotFoundException;
 import br.com.caiohenrique.mapper.DozerMapper;
 import br.com.caiohenrique.model.Person;
@@ -45,6 +46,9 @@ public class PersonService {
 
     // Creating person
     public PersonVO createPerson(PersonVO personVO) {
+
+        if (personVO == null) throw new RequiredObjectIsNullException();
+
         logger.info("Creating one person...");
 
         // Recebo um VO, preciso converter para entidade e depois que salvar passar para VO novamente.
@@ -56,6 +60,9 @@ public class PersonService {
 
     // Updating person
     public PersonVO updatePerson(PersonVO personVO) {
+
+        if (personVO == null) throw new RequiredObjectIsNullException();
+
         logger.info("Updating one person...");
         // Conexão com o banco
         Person entity = repository.findById(personVO.getKey()).orElseThrow(() -> new ResourceNotFoundException("No records found for this ID!"));

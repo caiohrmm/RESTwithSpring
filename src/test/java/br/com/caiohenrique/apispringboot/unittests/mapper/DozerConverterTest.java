@@ -3,19 +3,15 @@ package br.com.caiohenrique.apispringboot.unittests.mapper;
 import br.com.caiohenrique.apispringboot.unittests.mapper.mocks.MockPerson;
 import br.com.caiohenrique.data.valueobjects.v1.PersonVO;
 import br.com.caiohenrique.mapper.DozerMapper;
-import br.com.caiohenrique.mapper.ModelMapperConfig;
 import br.com.caiohenrique.model.Person;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ModelMapperConfigConverterTest {
+public class DozerConverterTest {
     
     MockPerson inputObject;
 
