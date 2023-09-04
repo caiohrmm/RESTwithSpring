@@ -83,7 +83,6 @@ public class PersonController {
     }
 
     @PutMapping(consumes = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML}, produces = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
-    @PostMapping(consumes = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML}, produces = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
     @Operation(summary = "Update a Person", description = "Update a persisted person by passing in a JSON, XML or YML", tags = {"People"},
             responses = {
                     @ApiResponse(description = "Updated", responseCode = "200",
@@ -102,7 +101,6 @@ public class PersonController {
     }
 
     @DeleteMapping(value = "/{id}")
-    @PostMapping(consumes = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML}, produces = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
     @Operation(summary = "Delete a Person", description = "Delete person", tags = {"People"},
             responses = {
                     @ApiResponse(description = "No Content", responseCode = "204",
