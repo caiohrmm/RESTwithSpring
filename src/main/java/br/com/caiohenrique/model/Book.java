@@ -21,6 +21,15 @@ public class Book implements Serializable {
     private Date launchDate;
     @Column(name = "title")
     private String title;
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
     @Column(name = "price", nullable = false)
     private BigDecimal price;
 
