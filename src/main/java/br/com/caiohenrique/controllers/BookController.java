@@ -103,7 +103,7 @@ public class BookController {
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),
             })
     public BookVO updateBook(@RequestBody BookVO bookVO){
-        return updateBook(bookVO);
+        return service.updateBook(bookVO);
     }
 
     @DeleteMapping(value = "/{id}")

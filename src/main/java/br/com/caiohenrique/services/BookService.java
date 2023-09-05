@@ -58,7 +58,7 @@ public class BookService {
     }
 
     // Updating person
-    public BookVO updatePerson(BookVO bookVO) {
+    public BookVO updateBook(BookVO bookVO) {
 
         if (bookVO == null) throw new RequiredObjectIsNullException();
 
