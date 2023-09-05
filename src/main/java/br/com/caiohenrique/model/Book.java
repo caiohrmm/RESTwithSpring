@@ -2,6 +2,7 @@ package br.com.caiohenrique.model;
 
 import jakarta.persistence.*;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -10,6 +11,7 @@ import java.util.Objects;
 @Entity
 @Table(name="books")
 public class Book implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -23,8 +25,6 @@ public class Book implements Serializable {
     private String title;
     @Column(name = "price", nullable = false)
     private Double price;
-
-
 
     public Long getId() {
         return id;
