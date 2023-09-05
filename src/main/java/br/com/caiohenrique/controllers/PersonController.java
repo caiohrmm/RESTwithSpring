@@ -27,26 +27,34 @@ public class PersonController {
     @Autowired
     private PersonService service;
 
-    @GetMapping(produces = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
+    @GetMapping(produces = {APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
     @Operation(summary = "Finds all People", description = "Find all people", tags = {"People"},
-    responses = {
-            @ApiResponse(description = "Success", responseCode = "200",
-                    content = {
-                        @Content(
-                                mediaType = "application/json",
-                                array = @ArraySchema(schema = @Schema(implementation = PersonVO.class))
-                        )
-                    }),
-            @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
-            @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
-            @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
-            @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),
-    })
+            responses = {
+                    @ApiResponse(description = "Success", responseCode = "200",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(schema = @Schema(implementation = PersonVO.class))
+                                    ), @Content(
+                                    mediaType = "application/xml",
+                                    array = @ArraySchema(schema = @Schema(implementation = PersonVO.class))
+                            ),
+                                    @Content(
+                                            mediaType = "application/x-yaml",
+                                            array = @ArraySchema(schema = @Schema(implementation = PersonVO.class))
+                                    )
+                            }),
+
+                    @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
+                    @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),
+            })
     public List<PersonVO> findAllPersons() {
         return service.findAllPersons();
     }
 
-    @GetMapping(value = "/{id}", produces = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
+    @GetMapping(value = "/{id}", produces = {APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
     @Operation(summary = "Find a Person", description = "Find a person", tags = {"People"},
             responses = {
                     @ApiResponse(description = "Success", responseCode = "200",
@@ -61,11 +69,11 @@ public class PersonController {
                     @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),
             })
-    public PersonVO findById(@PathVariable(value = "id") Long id){
+    public PersonVO findById(@PathVariable(value = "id") Long id) {
         return service.findById(id);
     }
 
-    @PostMapping(consumes = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML}, produces = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
+    @PostMapping(consumes = {APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML}, produces = {APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
     @Operation(summary = "Add a Person", description = "Add a new person by passing in a JSON, XML or YML", tags = {"People"},
             responses = {
                     @ApiResponse(description = "Created", responseCode = "200",
@@ -82,7 +90,7 @@ public class PersonController {
         return service.createPerson(personVO);
     }
 
-    @PutMapping(consumes = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML}, produces = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
+    @PutMapping(consumes = {APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML}, produces = {APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
     @Operation(summary = "Update a Person", description = "Update a persisted person by passing in a JSON, XML or YML", tags = {"People"},
             responses = {
                     @ApiResponse(description = "Updated", responseCode = "200",
