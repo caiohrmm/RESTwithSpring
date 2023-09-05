@@ -1,4 +1,4 @@
-package br.com.caiohenrique.config.config;
+package br.com.caiohenrique.config;
 
 import br.com.caiohenrique.serialization.converter.YamlJackson2HttpMessageConverter;
 import org.springframework.context.annotation.Configuration;
