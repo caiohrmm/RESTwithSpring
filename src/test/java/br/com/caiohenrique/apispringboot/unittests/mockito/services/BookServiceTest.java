@@ -61,7 +61,7 @@ class BookServiceTest {
         assertTrue(result.toString().contains("links: [</books/v1/1>;rel=\"self\"]"));
         assertEquals("Author Test1", result.getAuthor());
         assertEquals("Title Test1", result.getTitle());
-        assertEquals(new BigDecimal("100"), result.getPrice());
+        assertEquals(100.0, result.getPrice());
         assertEquals(new Date(1630738800000L), result.getLaunchDate());
     }
 
@@ -84,7 +84,7 @@ class BookServiceTest {
         assertTrue(personOne.toString().contains("links: [</books/v1/1>;rel=\"self\"]"));
         assertEquals("Author Test1", personOne.getAuthor());
         assertEquals("Title Test1", personOne.getTitle());
-        assertEquals(new BigDecimal("100"), personOne.getPrice());
+        assertEquals(100.0, personOne.getPrice());
         assertEquals(new Date(1630738800000L), personOne.getLaunchDate());
 
         var personFour = people.get(4);
@@ -96,7 +96,7 @@ class BookServiceTest {
         assertTrue(personFour.toString().contains("links: [</books/v1/4>;rel=\"self\"]"));
         assertEquals("Author Test4", personFour.getAuthor());
         assertEquals("Title Test4", personFour.getTitle());
-        assertEquals(new BigDecimal("100"), personFour.getPrice());
+        assertEquals(100.0, personFour.getPrice());
         assertEquals(new Date(1630738800000L), personFour.getLaunchDate());
 
         var personSeven = people.get(7);
@@ -108,7 +108,7 @@ class BookServiceTest {
         assertTrue(personSeven.toString().contains("links: [</books/v1/7>;rel=\"self\"]"));
         assertEquals("Author Test7", personSeven.getAuthor());
         assertEquals("Title Test7", personSeven.getTitle());
-        assertEquals(new BigDecimal("100"), personSeven.getPrice());
+        assertEquals(100.0, personSeven.getPrice());
         assertEquals(new Date(1630738800000L), personSeven.getLaunchDate());
 
     }
@@ -139,7 +139,7 @@ class BookServiceTest {
         assertTrue(result.toString().contains("links: [</books/v1/1>;rel=\"self\"]"));
         assertEquals("Author Test1", result.getAuthor());
         assertEquals("Title Test1", result.getTitle());
-        assertEquals(new BigDecimal("100"), result.getPrice());
+        assertEquals(100.0, result.getPrice());
         assertEquals(new Date(1630738800000L), result.getLaunchDate());
 
     }
@@ -187,7 +187,7 @@ class BookServiceTest {
         assertTrue(result.toString().contains("links: [</books/v1/1>;rel=\"self\"]"));
         assertEquals("Author Test1", result.getAuthor());
         assertEquals("Title Test1", result.getTitle());
-        assertEquals(new BigDecimal("100"), result.getPrice());
+        assertEquals(100.0, result.getPrice());
         assertEquals(new Date(1630738800000L), result.getLaunchDate());
     }
 

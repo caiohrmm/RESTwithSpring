@@ -21,7 +21,7 @@ public class BookVO extends RepresentationModel<BookVO> implements Serializable 
 
     private Date launchDate;
 
-    private BigDecimal price;
+    private Double price;
 
     private String title;
 
@@ -49,11 +49,11 @@ public class BookVO extends RepresentationModel<BookVO> implements Serializable 
         this.launchDate = launchDate;
     }
 
-    public BigDecimal getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 

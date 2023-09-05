@@ -31,12 +31,13 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
         // Irei implementar o XML via header - http://localhost:8080/persons/v1?mediaType=xml
-                configurer.favorParameter(false)
+        configurer.favorParameter(false)
                 .ignoreAcceptHeader(false)
                 .useRegisteredExtensionsOnly(false)
                 .defaultContentType(MediaType.APPLICATION_JSON)
                 .mediaType("json", MediaType.APPLICATION_JSON)
-                .mediaType("xml", MediaType.APPLICATION_XML).mediaType("x-yaml",MEDIA_TYPE_APPLICATION_YML);
+                .mediaType("xml", MediaType.APPLICATION_XML)
+                .mediaType("x-yaml", MEDIA_TYPE_APPLICATION_YML);
     }
 
     // Adicionando meu messageConverter aqui

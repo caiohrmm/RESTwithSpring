@@ -1,7 +1,6 @@
 package br.com.caiohenrique.controllers;
 
 import br.com.caiohenrique.data.valueobjects.v1.BookVO;
-import br.com.caiohenrique.data.valueobjects.v1.PersonVO;
 import br.com.caiohenrique.services.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -71,7 +70,7 @@ public class BookController {
         return service.findById(id);
     }
 
-    @PostMapping(produces = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML}, consumes = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
+    @PostMapping(consumes = {APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML}, produces = {APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
     @Operation(summary = "Add a book", description = "Add a new book by passing in a JSON, XML or YML", tags = {"Library"},
             responses = {
                     @ApiResponse(description = "Created", responseCode = "200",
@@ -88,7 +87,7 @@ public class BookController {
         return service.createBook(bookVO);
     }
 
-    @PutMapping(produces = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML}, consumes = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
+    @PutMapping(consumes = {APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML}, produces = {APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
     @Operation(summary = "Update a book", description = "Update a persisted book by passing in a JSON, XML or YML", tags = {"Library"},
             responses = {
                     @ApiResponse(description = "Updated", responseCode = "200",
