@@ -21,7 +21,7 @@ import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
 
 // Como se trata de um teste de integração, preciso garantir uma ordem para as coisas serem feitas
-// primeiro gero um  VO para depois fazer o update do mesmo ou procurá-lo
+// primeiro gero um VO para depois fazer o update do mesmo ou procurá-lo
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -119,18 +119,11 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
 
     }
 
-    private void mockPerson() {
-        personVO.setFirstName("Caio");
-        personVO.setLastName("Henrique");
-        personVO.setAddress("London");
-        personVO.setGender("Male");
 
-    }
 
     @Test
-    @Order(1)
+    @Order(3)
     public void testFindById() throws IOException {
-
         // Como se eu estivesse configurando o Postman
         specification = new RequestSpecBuilder()
                 .addHeader(HEADER_PARAMS_ORIGIN, ORIGIN_CHRM)
@@ -146,7 +139,7 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
                         .contentType(APPLICATION_JSON)
                         .pathParam("id", personVO.getId())
                         .when()
-                        .get("")
+                        .get("{id}")
                         .then()
                         .statusCode(200)
                         .extract()
@@ -169,6 +162,44 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
         assertEquals("London",persistedPerson.getAddress());
         assertEquals("Henrique",persistedPerson.getLastName());
 
+    }
+
+    @Test
+    @Order(4)
+    public void testFindByIdWithWrongOrigin() throws IOException {
+
+        // Como se eu estivesse configurando o Postman
+        specification = new RequestSpecBuilder()
+                .addHeader(HEADER_PARAMS_ORIGIN, ORIGIN_WRONG)
+                .setBasePath("/persons/v1")
+                .setPort(TestConfigs.SERVER_PORT)
+                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
+                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                .build();
+
+        // Salvo o conteudo da página em uma variavel
+        var content =
+                given().spec(specification)
+                        .contentType(APPLICATION_JSON)
+                        .pathParam("id", personVO.getId())
+                        .when()
+                        .get("{id}")
+                        .then()
+                        .statusCode(403)
+                        .extract()
+                        .body().asString();
+        // Apenas deve me retornar o content com uma string de erro de CORS.
+
+        assertNotNull(content);
+        assertTrue(content.contains("Invalid CORS request"));
+
+    }
+
+    private void mockPerson() {
+        personVO.setFirstName("Caio");
+        personVO.setLastName("Henrique");
+        personVO.setAddress("London");
+        personVO.setGender("Male");
     }
 
 
