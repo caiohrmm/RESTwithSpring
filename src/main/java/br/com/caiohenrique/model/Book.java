@@ -2,6 +2,7 @@ package br.com.caiohenrique.model;
 
 import jakarta.persistence.*;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -10,6 +11,7 @@ import java.util.Objects;
 @Entity
 @Table(name="books")
 public class Book implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -21,17 +23,8 @@ public class Book implements Serializable {
     private Date launchDate;
     @Column(name = "title")
     private String title;
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
     @Column(name = "price", nullable = false)
-    private BigDecimal price;
+    private Double price;
 
     public Long getId() {
         return id;
@@ -66,6 +59,14 @@ public class Book implements Serializable {
     }
 
     public Book() {
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 
     @Override

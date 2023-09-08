@@ -43,7 +43,7 @@ public class MockBook {
         book.setTitle("Title Test" + number);
         book.setId(number.longValue());
         book.setAuthor("Author Test" + number);
-        book.setPrice(new BigDecimal("100"));
+        book.setPrice(100.0);
         return book;
     }
 
@@ -54,7 +54,7 @@ public class MockBook {
         bookVO.setTitle("Title Test" + number);
         bookVO.setKey(number.longValue());
         bookVO.setAuthor("Author Test" + number);
-        bookVO.setPrice(new BigDecimal("100"));
+        bookVO.setPrice(100.0);
         return bookVO;
     }
 

@@ -1,5 +1,6 @@
 package br.com.caiohenrique.services;
 
+import br.com.caiohenrique.config.WebConfig;
 import br.com.caiohenrique.controllers.BookController;
 import br.com.caiohenrique.data.valueobjects.v1.BookVO;
 import br.com.caiohenrique.exceptions.RequiredObjectIsNullException;

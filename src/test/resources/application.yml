@@ -1,9 +1,9 @@
+cors:
+  originPatterns: http://localhost:8080,https://chrm.com.br,http://localhost:3000
+# Configurar a porta que o spring vai abrir em ambiente de testes.
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/projetojpa?useTimezone=true?serverTimezone=UTC
-    username: caioh
-    password: projetojpa
   jpa:
     hibernate:
       ddl-auto: none
@@ -11,10 +11,9 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
         show_sql: false
-cors:
-  originPatterns: http://localhost:8080,https://chrm.com.br,http://localhost:3000
-
 springdoc:
   swagger-ui:
     use-root-path: true
   paths-to-match: /**/v1/**
+server:
+  port: 8888

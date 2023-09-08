@@ -1,7 +1,6 @@
 package br.com.caiohenrique.controllers;
 
 import br.com.caiohenrique.data.valueobjects.v1.BookVO;
-import br.com.caiohenrique.data.valueobjects.v1.PersonVO;
 import br.com.caiohenrique.services.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -17,6 +16,8 @@ import java.util.List;
 
 import static br.com.caiohenrique.util.MediaType.*;
 
+// @CrossOrigin
+// Permitir cors para todo o controller de todas as origins
 @RestController
 @RequestMapping("/books/v1")
 @Tag(name = "Library", description = "Endpoints for Managing Library")
@@ -24,6 +25,7 @@ public class BookController {
     @Autowired
     private BookService service;
 
+    // @CrossOrigin(origins = {"http://localhost:8080", "https://chrm.com.br"})
     @GetMapping(produces = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
     @Operation(summary = "Finds all Books", description = "Find all books", tags = {"Library"},
             responses = {
@@ -71,7 +73,7 @@ public class BookController {
         return service.findById(id);
     }
 
-    @PostMapping(produces = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML}, consumes = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
+    @PostMapping(consumes = {APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML}, produces = {APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
     @Operation(summary = "Add a book", description = "Add a new book by passing in a JSON, XML or YML", tags = {"Library"},
             responses = {
                     @ApiResponse(description = "Created", responseCode = "200",
@@ -88,7 +90,7 @@ public class BookController {
         return service.createBook(bookVO);
     }
 
-    @PutMapping(produces = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML}, consumes = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
+    @PutMapping(consumes = {APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML}, produces = {APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
     @Operation(summary = "Update a book", description = "Update a persisted book by passing in a JSON, XML or YML", tags = {"Library"},
             responses = {
                     @ApiResponse(description = "Updated", responseCode = "200",
