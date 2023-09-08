@@ -11,6 +11,9 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
         show_sql: false
+cors:
+  originPatterns: http://localhost:8080,https://chrm.com.br,http://localhost:3000
+
 springdoc:
   swagger-ui:
     use-root-path: true

@@ -16,6 +16,8 @@ import java.util.List;
 
 import static br.com.caiohenrique.util.MediaType.*;
 
+// @CrossOrigin
+// Permitir cors para todo o controller de todas as origins
 @RestController
 @RequestMapping("/books/v1")
 @Tag(name = "Library", description = "Endpoints for Managing Library")
@@ -23,6 +25,7 @@ public class BookController {
     @Autowired
     private BookService service;
 
+    // @CrossOrigin(origins = {"http://localhost:8080", "https://chrm.com.br"})
     @GetMapping(produces = { APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
     @Operation(summary = "Finds all Books", description = "Find all books", tags = {"Library"},
             responses = {
