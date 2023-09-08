@@ -1,3 +1,5 @@
+cors:
+  originPatterns: http://localhost:8080,https://chrm.com.br,http://localhost:3000
 # Configurar a porta que o spring vai abrir em ambiente de testes.
 spring:
   datasource:
