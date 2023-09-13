@@ -24,15 +24,18 @@ import java.util.List;
 @Service
 public class JwtTokenProvider {
 
+    public JwtTokenProvider(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
     @Value("${security.jwt.token.secret-key:secret}")
     private String secretKey = "secret";
 
     @Value("${security.jwt.token.expire-length:3600000}")
     private long tokenExpirationTimeInMs = 3600000; //1h
 
+
     @Autowired
-    public JwtTokenProvider(UserDetailsService userDetailsService) {
-    }
     private UserDetailsService userDetailsService;
 
     Algorithm algorithm = null;

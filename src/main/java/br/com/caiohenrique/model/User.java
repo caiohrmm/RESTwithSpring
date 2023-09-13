@@ -18,7 +18,7 @@ public class User implements Serializable,UserDetails {
     private Long id;
 
     @Column(name = "user_name", unique = true)
-    private String userName;
+    private String username;
 
     @Column(name = "full_name")
     private String fullName;
@@ -71,14 +71,6 @@ public class User implements Serializable,UserDetails {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 
     public String getFullName() {
@@ -143,10 +135,6 @@ public class User implements Serializable,UserDetails {
         return this.password;
     }
 
-    @Override
-    public String getUsername() {
-        return this.userName;
-    }
 
     @Override
     public boolean isAccountNonExpired() {
@@ -169,16 +157,25 @@ public class User implements Serializable,UserDetails {
     }
 
     @Override
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(userName, user.userName) && Objects.equals(fullName, user.fullName) && Objects.equals(password, user.password) && Objects.equals(accountNonExpired, user.accountNonExpired) && Objects.equals(accountNonLocked, user.accountNonLocked) && Objects.equals(credentialNonExpired, user.credentialNonExpired) && Objects.equals(enabled, user.enabled) && Objects.equals(permissionList, user.permissionList);
+        return Objects.equals(id, user.id) && Objects.equals(username, user.username) && Objects.equals(fullName, user.fullName) && Objects.equals(password, user.password) && Objects.equals(accountNonExpired, user.accountNonExpired) && Objects.equals(accountNonLocked, user.accountNonLocked) && Objects.equals(credentialNonExpired, user.credentialNonExpired) && Objects.equals(enabled, user.enabled) && Objects.equals(permissionList, user.permissionList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userName, fullName, password, accountNonExpired, accountNonLocked, credentialNonExpired, enabled, permissionList);
+        return Objects.hash(id, username, fullName, password, accountNonExpired, accountNonLocked, credentialNonExpired, enabled, permissionList);
     }
 }
 
