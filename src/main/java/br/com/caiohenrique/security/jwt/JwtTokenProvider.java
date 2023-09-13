@@ -24,9 +24,6 @@ import java.util.List;
 @Service
 public class JwtTokenProvider {
 
-    public JwtTokenProvider(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
 
     @Value("${security.jwt.token.secret-key:secret}")
     private String secretKey = "secret";

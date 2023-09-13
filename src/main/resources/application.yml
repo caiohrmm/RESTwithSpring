@@ -23,4 +23,6 @@ security:
 springdoc:
   swagger-ui:
     use-root-path: true
-  paths-to-match: /**/v1/**
+  paths-to-match:
+    - /**/v1/**
+    - /auth/**

@@ -40,7 +40,7 @@ public class AuthService {
 
             if (user != null) {
                 tokenResponse = tokenProvider.createAccessToken(username, user.getRoles());
-            }else {
+            } else {
                 throw new UsernameNotFoundException("Username "+username+ " not found !");
             }
 

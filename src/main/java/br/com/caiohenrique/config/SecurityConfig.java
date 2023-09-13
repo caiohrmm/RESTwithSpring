@@ -25,15 +25,15 @@ public class SecurityConfig {
 
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .httpBasic().disable()
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
                         authorizeHttpRequests -> authorizeHttpRequests
-                                .requestMatchers("/auth/**", "/swagger-ui/**", "/api-docs/**").permitAll()
-                                .requestMatchers("/v1/**").authenticated()
+                                .requestMatchers("/auth/signin", "/auth/refresh/**","/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                                .requestMatchers("/books/**", "/persons/**").authenticated()
                                 .requestMatchers("/users").denyAll()
                 )
                 .cors()

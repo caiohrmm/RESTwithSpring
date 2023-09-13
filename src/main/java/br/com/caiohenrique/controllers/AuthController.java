@@ -4,6 +4,7 @@ import br.com.caiohenrique.data.valueobjects.v1.security.AccountCredentialsVO;
 import br.com.caiohenrique.services.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 @SuppressWarnings("ALL")
 @Tag(name = "Authentication Endpoint")
 @RestController
-@RequestMapping("/signin")
+@RequestMapping("/auth")
 public class AuthController {
 
+    @Autowired
     private AuthService authService;
 
     @Operation(
@@ -32,8 +34,7 @@ public class AuthController {
         if (token == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request !");
         }
-
-        return null;
+        return token;
     }
 
     // Método que valida se o conteudo que chega no body é nulo.
