@@ -1,10 +1,9 @@
 package br.com.caiohenrique.apispringboot.integrationtests.controllers.withjson;
 
-import br.com.caiohenrique.apispringboot.configs.TestConfigs;
 import br.com.caiohenrique.apispringboot.integrationtests.testcontainers.AbstractIntegrationTest;
 import br.com.caiohenrique.apispringboot.integrationtests.vo.PersonVO;
-import static br.com.caiohenrique.util.MediaType.*;
-import static br.com.caiohenrique.apispringboot.configs.TestConfigs.*;
+import br.com.caiohenrique.apispringboot.integrationtests.vo.authorization.AccountCredentialsVO;
+import br.com.caiohenrique.apispringboot.integrationtests.vo.authorization.TokenVO;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -17,6 +16,8 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
+import static br.com.caiohenrique.apispringboot.configs.TestConfigs.*;
+import static br.com.caiohenrique.util.MediaType.APPLICATION_JSON;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -44,22 +45,44 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Order(1)
-    public void testCreate() throws IOException {
-        mockPerson();
+    @Order(0)
+    public void authorization() throws IOException {
+        AccountCredentialsVO userDefault = new AccountCredentialsVO("caio", "admin123");
 
-        // Como se eu estivesse configurando o Postman
+        var accessToken =
+                given()
+                        .basePath("/auth/signin")
+                        .port(SERVER_PORT)
+                        .contentType(APPLICATION_JSON)
+                        .body(userDefault)
+                        .when()
+                        .post()
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body()
+                        .as(TokenVO.class)
+                        .getAccessToken();
+
         specification = new RequestSpecBuilder()
-                .addHeader(HEADER_PARAMS_ORIGIN, ORIGIN_CHRM)
+                .addHeader(HEADER_PARAMS_AUTHORIZATION, "Bearer "+ accessToken)
                 .setBasePath("/persons/v1")
-                .setPort(TestConfigs.SERVER_PORT)
+                .setPort(SERVER_PORT)
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))
                 .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
                 .build();
 
+    }
+
+    @Test
+    @Order(1)
+    public void testCreate() throws IOException {
+        mockPerson();
+
         // Salvo o conteudo da página em uma variavel
         var content =
                 given().spec(specification)
+                        .header(HEADER_PARAMS_ORIGIN, ORIGIN_CHRM)
                         .contentType(APPLICATION_JSON)
                         .body(personVO)
                         .when()
@@ -81,29 +104,22 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
         assertNotNull(persistedPerson.getLastName());
         assertTrue(persistedPerson.getId() > 0);
 
-        assertEquals("Caio",persistedPerson.getFirstName());
-        assertEquals("Male",persistedPerson.getGender());
-        assertEquals("London",persistedPerson.getAddress());
-        assertEquals("Henrique",persistedPerson.getLastName());
+        assertEquals("Caio", persistedPerson.getFirstName());
+        assertEquals("Male", persistedPerson.getGender());
+        assertEquals("London", persistedPerson.getAddress());
+        assertEquals("Henrique", persistedPerson.getLastName());
 
     }
+
     @Test
     @Order(2)
     public void testCreateWithWrongOrigin() throws IOException {
         mockPerson();
 
-        // Como se eu estivesse configurando o Postman
-        specification = new RequestSpecBuilder()
-                .addHeader(HEADER_PARAMS_ORIGIN, ORIGIN_WRONG)
-                .setBasePath("/persons/v1")
-                .setPort(TestConfigs.SERVER_PORT)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
-
         // Salvo o conteudo da página em uma variavel
         var content =
                 given().spec(specification)
+                        .header(HEADER_PARAMS_ORIGIN, ORIGIN_WRONG)
                         .contentType(APPLICATION_JSON)
                         .body(personVO)
                         .when()
@@ -112,7 +128,7 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
                         .statusCode(403)
                         .extract()
                         .body().asString();
-       // Apenas deve me retornar o content com uma string de erro de CORS.
+        // Apenas deve me retornar o content com uma string de erro de CORS.
 
         assertNotNull(content);
         assertTrue(content.contains("Invalid CORS request"));
@@ -120,22 +136,14 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
     }
 
 
-
     @Test
     @Order(3)
     public void testFindById() throws IOException {
-        // Como se eu estivesse configurando o Postman
-        specification = new RequestSpecBuilder()
-                .addHeader(HEADER_PARAMS_ORIGIN, ORIGIN_CHRM)
-                .setBasePath("/persons/v1")
-                .setPort(TestConfigs.SERVER_PORT)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
 
         // Salvo o conteudo da página em uma variavel
         var content =
                 given().spec(specification)
+                        .header(HEADER_PARAMS_ORIGIN, ORIGIN_CHRM)
                         .contentType(APPLICATION_JSON)
                         .pathParam("id", personVO.getId())
                         .when()
@@ -157,10 +165,10 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
         assertNotNull(persistedPerson.getLastName());
         assertTrue(persistedPerson.getId() > 0);
 
-        assertEquals("Caio",persistedPerson.getFirstName());
-        assertEquals("Male",persistedPerson.getGender());
-        assertEquals("London",persistedPerson.getAddress());
-        assertEquals("Henrique",persistedPerson.getLastName());
+        assertEquals("Caio", persistedPerson.getFirstName());
+        assertEquals("Male", persistedPerson.getGender());
+        assertEquals("London", persistedPerson.getAddress());
+        assertEquals("Henrique", persistedPerson.getLastName());
 
     }
 
@@ -168,19 +176,12 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
     @Order(4)
     public void testFindByIdWithWrongOrigin() throws IOException {
 
-        // Como se eu estivesse configurando o Postman
-        specification = new RequestSpecBuilder()
-                .addHeader(HEADER_PARAMS_ORIGIN, ORIGIN_WRONG)
-                .setBasePath("/persons/v1")
-                .setPort(TestConfigs.SERVER_PORT)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
 
         // Salvo o conteudo da página em uma variavel
         var content =
                 given().spec(specification)
                         .contentType(APPLICATION_JSON)
+                        .header(HEADER_PARAMS_ORIGIN, ORIGIN_WRONG)
                         .pathParam("id", personVO.getId())
                         .when()
                         .get("{id}")
