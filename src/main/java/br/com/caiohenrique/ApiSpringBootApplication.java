@@ -14,7 +14,7 @@ public class ApiSpringBootApplication {
 
         String senha = passwordEncoder.encode("admin123");
 
-        System.out.println(senha);
+        //System.out.println(senha);
 
     }
 

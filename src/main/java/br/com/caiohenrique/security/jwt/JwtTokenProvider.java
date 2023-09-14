@@ -52,6 +52,25 @@ public class JwtTokenProvider {
 
     }
 
+    // Após expirar o token convencional, esse método gera outro access token, sem precisar reenviar user e password
+    public TokenVO refreshToken (String refreshToken) {
+        // Extrai o Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJz e fica somente o token
+        if (refreshToken.contains("Bearer ")) refreshToken = refreshToken.substring("Bearer ".length());
+
+        // Preciso decodificar o meu token para extrair seu subject e suas roles.
+        JWTVerifier jwtVerifier = JWT.require(algorithm).build();
+        DecodedJWT decodedJWT = jwtVerifier.verify(refreshToken);
+
+        // Extraindo o username
+        String username = decodedJWT.getSubject();
+
+        // Extraindo as roles para lista de strings.
+        List<String> roles = decodedJWT.getClaim("roles").asList(String.class);
+
+        return createAccessToken(username, roles);
+
+    }
+
     private String getRefreshToken(String username, List<String> roles, Date now, Date validity) {
         Date validityRefreshToken = new Date(now.getTime() + (tokenExpirationTimeInMs * 3));
         return JWT.create()

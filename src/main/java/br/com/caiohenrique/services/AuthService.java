@@ -2,6 +2,7 @@ package br.com.caiohenrique.services;
 
 import br.com.caiohenrique.data.valueobjects.v1.security.AccountCredentialsVO;
 import br.com.caiohenrique.data.valueobjects.v1.security.TokenVO;
+import br.com.caiohenrique.model.User;
 import br.com.caiohenrique.repositories.UserRepository;
 import br.com.caiohenrique.security.jwt.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,15 +42,30 @@ public class AuthService {
             if (user != null) {
                 tokenResponse = tokenProvider.createAccessToken(username, user.getRoles());
             } else {
+                throw new UsernameNotFoundException("Username " + username + " not found !");
+            }
+
+            return ResponseEntity.ok(tokenResponse);
+        } catch (Exception e) {
+            throw new BadCredentialsException("Invalid username/password supplied !");
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    public ResponseEntity refreshToken(String username, String refreshToken) {
+
+            User user = repository.findByUsername(username);
+
+            var tokenResponse = new TokenVO();
+
+            if (user != null) {
+                tokenResponse = tokenProvider.refreshToken(refreshToken);
+            } else {
                 throw new UsernameNotFoundException("Username "+username+ " not found !");
             }
 
             return ResponseEntity.ok(tokenResponse);
         }
-        catch (Exception e){
-            throw new BadCredentialsException("Invalid username/password supplied !");
-        }
 
     }
 
-}
