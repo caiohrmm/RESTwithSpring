@@ -1,8 +1,11 @@
 package br.com.caiohenrique.apispringboot.integrationtests.vo.authorization;
 
+import jakarta.xml.bind.annotation.XmlRootElement;
+
 import java.util.Date;
 import java.util.Objects;
 
+@XmlRootElement
 public class TokenVO {
 
     private String username;
