@@ -1,25 +1,32 @@
-package br.com.caiohenrique.apispringboot.integrationtests.controllers.withjson;
+package br.com.caiohenrique.apispringboot.integrationtests.controllers.withyaml;
 
+import br.com.caiohenrique.apispringboot.integrationtests.controllers.withyaml.mapper.YamlMapper;
 import br.com.caiohenrique.apispringboot.integrationtests.testcontainers.AbstractIntegrationTest;
-import br.com.caiohenrique.apispringboot.integrationtests.vo.entities.PersonVO;
 import br.com.caiohenrique.apispringboot.integrationtests.vo.authorization.AccountCredentialsVO;
 import br.com.caiohenrique.apispringboot.integrationtests.vo.authorization.TokenVO;
+import br.com.caiohenrique.apispringboot.integrationtests.vo.entities.PersonVO;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.config.EncoderConfig;
+import io.restassured.config.RestAssuredConfig;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
+import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.testcontainers.shaded.com.fasterxml.jackson.core.type.TypeReference;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.DeserializationFeature;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
-import static br.com.caiohenrique.apispringboot.configs.TestConfigs.*;
-import static br.com.caiohenrique.util.MediaType.APPLICATION_JSON;
+import static br.com.caiohenrique.apispringboot.configs.TestConfigs.HEADER_PARAMS_AUTHORIZATION;
+import static br.com.caiohenrique.apispringboot.configs.TestConfigs.SERVER_PORT;
+import static br.com.caiohenrique.util.MediaType.APPLICATION_XML;
+import static br.com.caiohenrique.util.MediaType.APPLICATION_YML;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,19 +36,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class PersonControllerJsonTest extends AbstractIntegrationTest {
+public class PersonControllerYamlTest extends AbstractIntegrationTest {
 
     // Criar um setup que será executado antes de todos os testes.
     private static RequestSpecification specification;
     private static RequestSpecification specificationWithoutToken;
-    private static ObjectMapper objectMapper;
+    private static YamlMapper objectMapper;
     private static PersonVO personVO;
 
     @BeforeAll
     public static void beforeAll() {
-        objectMapper = new ObjectMapper();
-        // Recebo o JSON com HATEOAS, sem essa propriedade ele nao consegue ignorar o erro.
-        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        objectMapper = new YamlMapper();
         personVO = new PersonVO();
         // Aqui o contexto do spring ainda não está em execucao, por isso,
         // Nao posso definir as specifications aqui
@@ -57,8 +62,10 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
                 given()
                         .basePath("/auth/signin")
                         .port(SERVER_PORT)
-                        .contentType(APPLICATION_JSON)
-                        .body(userDefault)
+                        .contentType(APPLICATION_YML)
+                        .config(RestAssuredConfig.config().encoderConfig(EncoderConfig.encoderConfig()
+                                .encodeContentTypeAs(APPLICATION_YML, ContentType.TEXT)))
+                        .body(userDefault, objectMapper)
                         .when()
                         .post()
                         .then()
@@ -93,20 +100,21 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
         mockPerson();
 
         // Salvo o conteudo da página em uma variavel
-        var content =
+        var persistedPerson =
                 given().spec(specification)
-                        .header(HEADER_PARAMS_ORIGIN, ORIGIN_CHRM)
-                        .contentType(APPLICATION_JSON)
-                        .body(personVO)
+                        .contentType(APPLICATION_YML)
+                        .accept(APPLICATION_YML)
+                        .config(RestAssuredConfig.config().encoderConfig(EncoderConfig.encoderConfig()
+                                .encodeContentTypeAs(APPLICATION_YML, ContentType.TEXT)))
+                        .body(personVO, objectMapper)
                         .when()
                         .post()
                         .then()
                         .statusCode(200)
                         .extract()
-                        .body().asString();
+                        .body().as(PersonVO.class, objectMapper);
 
         // Para transformar o valor criado em Vo e conseguir ler ele.
-        PersonVO persistedPerson = objectMapper.readValue(content, PersonVO.class);
         personVO = persistedPerson;
 
         assertNotNull(persistedPerson);
@@ -129,19 +137,21 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
         personVO.setLastName("Arthur");
 
         // Salvo o conteudo da página em uma variavel
-        var content =
+        var persistedPerson =
                 given().spec(specification)
-                        .contentType(APPLICATION_JSON)
-                        .body(personVO)
+                        .config(RestAssuredConfig.config().encoderConfig(EncoderConfig.encoderConfig()
+                                .encodeContentTypeAs(APPLICATION_YML, ContentType.TEXT)))
+                        .contentType(APPLICATION_YML)
+                        .accept(APPLICATION_YML)
+                        .body(personVO, objectMapper)
                         .when()
                         .post()
                         .then()
                         .statusCode(200)
                         .extract()
-                        .body().asString();
+                        .body().as(PersonVO.class, objectMapper);
 
         // Para transformar o valor criado em Vo e conseguir ler ele.
-        PersonVO persistedPerson = objectMapper.readValue(content, PersonVO.class);
         personVO = persistedPerson;
 
         assertNotNull(persistedPerson);
@@ -165,19 +175,21 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
     public void testFindById() throws IOException {
 
         // Salvo o conteudo da página em uma variavel
-        var content =
+        var persistedPerson =
                 given().spec(specification)
-                        .contentType(APPLICATION_JSON)
+                        .contentType(APPLICATION_YML)
+                        .accept(APPLICATION_YML)
+                        .config(RestAssuredConfig.config().encoderConfig(EncoderConfig.encoderConfig()
+                                .encodeContentTypeAs(APPLICATION_YML, ContentType.TEXT)))
                         .pathParam("id", personVO.getId())
                         .when()
                         .get("{id}")
                         .then()
                         .statusCode(200)
                         .extract()
-                        .body().asString();
+                        .body().as(PersonVO.class, objectMapper);
 
         // Para transformar o valor criado em Vo e conseguir ler ele.
-        PersonVO persistedPerson = objectMapper.readValue(content, PersonVO.class);
         personVO = persistedPerson;
 
         assertNotNull(persistedPerson);
@@ -225,17 +237,19 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
         // Content chega em lista.
 
         // Salvo o conteúdo da página em uma variável
-        var content =
+        var contentList =
                 given().spec(specification)
-                        .contentType(APPLICATION_JSON)
+                        .contentType(APPLICATION_YML)
+                        .accept(APPLICATION_YML)
                         .when()
                         .get()
                         .then()
                         .statusCode(200)
                         .extract()
-                        .body().asString();
-        List<PersonVO> people = objectMapper.readValue(content, new TypeReference<List<PersonVO>>() {
-        });
+                        .body().as(PersonVO[].class, objectMapper);
+
+        // Para transformar o valor criado em Vo e conseguir ler ele.
+        List<PersonVO> people = Arrays.asList(contentList);
 
 
         // Para transformar o valor criado em Vo e conseguir ler ele.
@@ -260,10 +274,13 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
 
         // Salvo o conteúdo da página em uma variável
         given().spec(specificationWithoutToken)
-                .contentType(APPLICATION_JSON)
+                .contentType(APPLICATION_XML)
+                .accept(APPLICATION_XML)
                 .when()
                 .get()
                 .then()
                 .statusCode(403);
     }
+
+
 }

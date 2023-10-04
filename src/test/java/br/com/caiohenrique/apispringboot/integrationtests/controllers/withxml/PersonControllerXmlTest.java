@@ -1,9 +1,12 @@
-package br.com.caiohenrique.apispringboot.integrationtests.controllers.withjson;
+package br.com.caiohenrique.apispringboot.integrationtests.controllers.withxml;
 
 import br.com.caiohenrique.apispringboot.integrationtests.testcontainers.AbstractIntegrationTest;
-import br.com.caiohenrique.apispringboot.integrationtests.vo.entities.PersonVO;
 import br.com.caiohenrique.apispringboot.integrationtests.vo.authorization.AccountCredentialsVO;
 import br.com.caiohenrique.apispringboot.integrationtests.vo.authorization.TokenVO;
+import br.com.caiohenrique.apispringboot.integrationtests.vo.entities.PersonVO;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -11,15 +14,13 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.testcontainers.shaded.com.fasterxml.jackson.core.type.TypeReference;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.DeserializationFeature;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.List;
 
-import static br.com.caiohenrique.apispringboot.configs.TestConfigs.*;
-import static br.com.caiohenrique.util.MediaType.APPLICATION_JSON;
+import static br.com.caiohenrique.apispringboot.configs.TestConfigs.HEADER_PARAMS_AUTHORIZATION;
+import static br.com.caiohenrique.apispringboot.configs.TestConfigs.SERVER_PORT;
+import static br.com.caiohenrique.util.MediaType.APPLICATION_XML;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,17 +30,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class PersonControllerJsonTest extends AbstractIntegrationTest {
+public class PersonControllerXmlTest extends AbstractIntegrationTest {
 
     // Criar um setup que será executado antes de todos os testes.
     private static RequestSpecification specification;
     private static RequestSpecification specificationWithoutToken;
-    private static ObjectMapper objectMapper;
+    private static XmlMapper objectMapper;
     private static PersonVO personVO;
 
     @BeforeAll
     public static void beforeAll() {
-        objectMapper = new ObjectMapper();
+        objectMapper = new XmlMapper();
         // Recebo o JSON com HATEOAS, sem essa propriedade ele nao consegue ignorar o erro.
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         personVO = new PersonVO();
@@ -57,7 +58,7 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
                 given()
                         .basePath("/auth/signin")
                         .port(SERVER_PORT)
-                        .contentType(APPLICATION_JSON)
+                        .contentType(APPLICATION_XML)
                         .body(userDefault)
                         .when()
                         .post()
@@ -95,8 +96,8 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
         // Salvo o conteudo da página em uma variavel
         var content =
                 given().spec(specification)
-                        .header(HEADER_PARAMS_ORIGIN, ORIGIN_CHRM)
-                        .contentType(APPLICATION_JSON)
+                        .contentType(APPLICATION_XML)
+                        .accept(APPLICATION_XML)
                         .body(personVO)
                         .when()
                         .post()
@@ -131,7 +132,8 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
         // Salvo o conteudo da página em uma variavel
         var content =
                 given().spec(specification)
-                        .contentType(APPLICATION_JSON)
+                        .contentType(APPLICATION_XML)
+                        .accept(APPLICATION_XML)
                         .body(personVO)
                         .when()
                         .post()
@@ -167,7 +169,8 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
         // Salvo o conteudo da página em uma variavel
         var content =
                 given().spec(specification)
-                        .contentType(APPLICATION_JSON)
+                        .contentType(APPLICATION_XML)
+                        .accept(APPLICATION_XML)
                         .pathParam("id", personVO.getId())
                         .when()
                         .get("{id}")
@@ -227,7 +230,8 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
         // Salvo o conteúdo da página em uma variável
         var content =
                 given().spec(specification)
-                        .contentType(APPLICATION_JSON)
+                        .contentType(APPLICATION_XML)
+                        .accept(APPLICATION_XML)
                         .when()
                         .get()
                         .then()
@@ -260,10 +264,13 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
 
         // Salvo o conteúdo da página em uma variável
         given().spec(specificationWithoutToken)
-                .contentType(APPLICATION_JSON)
+                .contentType(APPLICATION_XML)
+                .accept(APPLICATION_XML)
                 .when()
                 .get()
                 .then()
                 .statusCode(403);
     }
+
+
 }

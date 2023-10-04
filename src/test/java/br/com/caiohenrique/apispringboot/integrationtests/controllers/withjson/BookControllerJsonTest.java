@@ -1,9 +1,10 @@
 package br.com.caiohenrique.apispringboot.integrationtests.controllers.withjson;
 
 import br.com.caiohenrique.apispringboot.integrationtests.testcontainers.AbstractIntegrationTest;
-import br.com.caiohenrique.apispringboot.integrationtests.vo.entities.PersonVO;
 import br.com.caiohenrique.apispringboot.integrationtests.vo.authorization.AccountCredentialsVO;
 import br.com.caiohenrique.apispringboot.integrationtests.vo.authorization.TokenVO;
+import br.com.caiohenrique.apispringboot.integrationtests.vo.entities.BookVO;
+import br.com.caiohenrique.apispringboot.integrationtests.vo.entities.PersonVO;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -16,9 +17,13 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.DeserializationF
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
-import static br.com.caiohenrique.apispringboot.configs.TestConfigs.*;
+import static br.com.caiohenrique.apispringboot.configs.TestConfigs.HEADER_PARAMS_AUTHORIZATION;
+import static br.com.caiohenrique.apispringboot.configs.TestConfigs.SERVER_PORT;
 import static br.com.caiohenrique.util.MediaType.APPLICATION_JSON;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,20 +34,20 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class PersonControllerJsonTest extends AbstractIntegrationTest {
+public class BookControllerJsonTest extends AbstractIntegrationTest {
 
     // Criar um setup que será executado antes de todos os testes.
     private static RequestSpecification specification;
     private static RequestSpecification specificationWithoutToken;
     private static ObjectMapper objectMapper;
-    private static PersonVO personVO;
+    private static BookVO bookVO;
 
     @BeforeAll
     public static void beforeAll() {
         objectMapper = new ObjectMapper();
         // Recebo o JSON com HATEOAS, sem essa propriedade ele nao consegue ignorar o erro.
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        personVO = new PersonVO();
+        bookVO = new BookVO();
         // Aqui o contexto do spring ainda não está em execucao, por isso,
         // Nao posso definir as specifications aqui
     }
@@ -70,7 +75,7 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
 
         specification = new RequestSpecBuilder()
                 .addHeader(HEADER_PARAMS_AUTHORIZATION, "Bearer " + accessToken)
-                .setBasePath("/persons/v1")
+                .setBasePath("/books/v1")
                 .setPort(SERVER_PORT)
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))
                 .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
@@ -78,7 +83,7 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
 
         specificationWithoutToken = new RequestSpecBuilder()
                 .addHeader(HEADER_PARAMS_AUTHORIZATION, "Bearer ")
-                .setBasePath("/persons/v1")
+                .setBasePath("/books/v1")
                 .setPort(SERVER_PORT)
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))
                 .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
@@ -89,15 +94,14 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
 
     @Test
     @Order(1)
-    public void testCreate() throws IOException {
-        mockPerson();
+    public void testCreate() throws IOException, ParseException {
+        mockBook();
 
         // Salvo o conteudo da página em uma variavel
         var content =
                 given().spec(specification)
-                        .header(HEADER_PARAMS_ORIGIN, ORIGIN_CHRM)
                         .contentType(APPLICATION_JSON)
-                        .body(personVO)
+                        .body(bookVO)
                         .when()
                         .post()
                         .then()
@@ -106,33 +110,35 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
                         .body().asString();
 
         // Para transformar o valor criado em Vo e conseguir ler ele.
-        PersonVO persistedPerson = objectMapper.readValue(content, PersonVO.class);
-        personVO = persistedPerson;
+        BookVO persistedBook = objectMapper.readValue(content, BookVO.class);
+        bookVO = persistedBook;
 
-        assertNotNull(persistedPerson);
-        assertNotNull(persistedPerson.getId());
-        assertNotNull(persistedPerson.getFirstName());
-        assertNotNull(persistedPerson.getGender());
-        assertNotNull(persistedPerson.getAddress());
-        assertNotNull(persistedPerson.getLastName());
-        assertTrue(persistedPerson.getId() > 0);
+        assertNotNull(persistedBook);
+        assertNotNull(persistedBook.getKey());
+        assertNotNull(persistedBook.getAuthor());
+        assertNotNull(persistedBook.getLaunchDate());
+        assertNotNull(persistedBook.getTitle());
+        assertNotNull(persistedBook.getPrice());
+        assertTrue(persistedBook.getKey() > 0);
 
-        assertEquals("Pedro", persistedPerson.getFirstName());
-        assertEquals("Male", persistedPerson.getGender());
-        assertEquals("Maringá", persistedPerson.getAddress());
-        assertEquals("Pastore", persistedPerson.getLastName());
+        assertEquals("Machado de Assis", persistedBook.getAuthor());
+        assertEquals("Memórias Póstumas de Brás Cubas", persistedBook.getTitle());
+        assertEquals(100.00, persistedBook.getPrice());
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        String date = "29/11/1881";
+        assertEquals(sdf.parse(date), persistedBook.getLaunchDate());
     }
 
     @Test
     @Order(2)
-    public void testUpdate() throws IOException {
-        personVO.setLastName("Arthur");
+    public void testUpdate() throws IOException, ParseException {
+        bookVO.setAuthor("Graciliano Ramos");
 
         // Salvo o conteudo da página em uma variavel
         var content =
                 given().spec(specification)
                         .contentType(APPLICATION_JSON)
-                        .body(personVO)
+                        .body(bookVO)
                         .when()
                         .post()
                         .then()
@@ -141,34 +147,35 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
                         .body().asString();
 
         // Para transformar o valor criado em Vo e conseguir ler ele.
-        PersonVO persistedPerson = objectMapper.readValue(content, PersonVO.class);
-        personVO = persistedPerson;
+        BookVO persistedBook = objectMapper.readValue(content, BookVO.class);
+        bookVO = persistedBook;
 
-        assertNotNull(persistedPerson);
-        assertNotNull(persistedPerson.getId());
-        assertNotNull(persistedPerson.getFirstName());
-        assertNotNull(persistedPerson.getGender());
-        assertNotNull(persistedPerson.getAddress());
-        assertNotNull(persistedPerson.getLastName());
-        assertEquals(persistedPerson.getId(), personVO.getId());
+        assertNotNull(persistedBook);
+        assertNotNull(persistedBook.getKey());
+        assertNotNull(persistedBook.getAuthor());
+        assertNotNull(persistedBook.getLaunchDate());
+        assertNotNull(persistedBook.getTitle());
+        assertNotNull(persistedBook.getPrice());
+        assertEquals(persistedBook.getKey(), bookVO.getKey());
 
-        assertEquals("Pedro", persistedPerson.getFirstName());
-        assertEquals("Male", persistedPerson.getGender());
-        assertEquals("Maringá", persistedPerson.getAddress());
-        assertEquals("Arthur", persistedPerson.getLastName());
-
+        assertEquals("Graciliano Ramos", persistedBook.getAuthor());
+        assertEquals("Memórias Póstumas de Brás Cubas", persistedBook.getTitle());
+        assertEquals(100.00, persistedBook.getPrice());
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        String date = "29/11/1881";
+        assertEquals(sdf.parse(date), persistedBook.getLaunchDate());
     }
 
 
     @Test
     @Order(3)
-    public void testFindById() throws IOException {
+    public void testFindById() throws IOException, ParseException {
 
         // Salvo o conteudo da página em uma variavel
         var content =
                 given().spec(specification)
                         .contentType(APPLICATION_JSON)
-                        .pathParam("id", personVO.getId())
+                        .pathParam("id", bookVO.getKey())
                         .when()
                         .get("{id}")
                         .then()
@@ -177,21 +184,23 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
                         .body().asString();
 
         // Para transformar o valor criado em Vo e conseguir ler ele.
-        PersonVO persistedPerson = objectMapper.readValue(content, PersonVO.class);
-        personVO = persistedPerson;
+        BookVO persistedBook = objectMapper.readValue(content, BookVO.class);
+        bookVO = persistedBook;
 
-        assertNotNull(persistedPerson);
-        assertNotNull(persistedPerson.getId());
-        assertNotNull(persistedPerson.getFirstName());
-        assertNotNull(persistedPerson.getGender());
-        assertNotNull(persistedPerson.getAddress());
-        assertNotNull(persistedPerson.getLastName());
-        assertEquals(persistedPerson.getId(), personVO.getId());
+        assertNotNull(persistedBook);
+        assertNotNull(persistedBook.getKey());
+        assertNotNull(persistedBook.getAuthor());
+        assertNotNull(persistedBook.getLaunchDate());
+        assertNotNull(persistedBook.getTitle());
+        assertNotNull(persistedBook.getPrice());
+        assertEquals(persistedBook.getKey(), bookVO.getKey());
 
-        assertEquals("Pedro", persistedPerson.getFirstName());
-        assertEquals("Male", persistedPerson.getGender());
-        assertEquals("Maringá", persistedPerson.getAddress());
-        assertEquals("Arthur", persistedPerson.getLastName());
+        assertEquals("Graciliano Ramos", persistedBook.getAuthor());
+        assertEquals("Memórias Póstumas de Brás Cubas", persistedBook.getTitle());
+        assertEquals(100.00, persistedBook.getPrice());
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        String date = "29/11/1881";
+        assertEquals(sdf.parse(date), persistedBook.getLaunchDate());
 
     }
 
@@ -202,24 +211,18 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
         // Salvo o conteudo da página em uma variavel
         given()
                 .spec(specification)
-                .pathParam("id", personVO.getId())
+                .pathParam("id", bookVO.getKey())
                 .when()
                 .delete("{id}")
                 .then()
                 .statusCode(204);
     }
 
-    private void mockPerson() {
-        personVO.setFirstName("Pedro");
-        personVO.setLastName("Pastore");
-        personVO.setAddress("Maringá");
-        personVO.setGender("Male");
-    }
+
 
     @Test
     @Order(5)
-    public void testFindAll() throws IOException {
-        mockPerson();
+    public void testFindAll() throws IOException, ParseException {
 
         // O TestContainers le as migrations e cria o banco de testes de acordo com elas.
         // Content chega em lista.
@@ -234,27 +237,23 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
                         .statusCode(200)
                         .extract()
                         .body().asString();
-        List<PersonVO> people = objectMapper.readValue(content, new TypeReference<List<PersonVO>>() {
+        List<BookVO> library = objectMapper.readValue(content, new TypeReference<List<BookVO>>() {
         });
 
 
         // Para transformar o valor criado em Vo e conseguir ler ele.
-        PersonVO personOne = people.get(0);
-        personVO = personOne;
+        BookVO bookOne = library.get(0);
 
-        assertEquals(personOne.getId(), 1);
+        assertEquals(bookOne.getKey(), 1);
 
-        assertEquals("Caio Henrique Rodrigues", personOne.getFirstName());
-        assertEquals("Male", personOne.getGender());
-        assertEquals("SP", personOne.getAddress());
-        assertEquals("Martins", personOne.getLastName());
+        assertEquals("Michael C. Feathers", bookOne.getAuthor());
+        assertEquals("Working effectively with legacy code", bookOne.getTitle());
+        assertEquals(49.00, bookOne.getPrice());
     }
 
     @Test
     @Order(6)
     public void testFindAllWithoutToken() throws IOException {
-        mockPerson();
-
         // O TestContainers le as migrations e cria o banco de testes de acordo com elas.
         // Content chega em lista.
 
@@ -266,4 +265,14 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
                 .then()
                 .statusCode(403);
     }
+
+    private void mockBook() throws ParseException {
+        bookVO.setAuthor("Machado de Assis");
+        bookVO.setTitle("Memórias Póstumas de Brás Cubas");
+        bookVO.setPrice(100.00);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        String date = "29/11/1881";
+        bookVO.setLaunchDate(sdf.parse(date));
+    }
+
 }

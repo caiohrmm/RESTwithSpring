@@ -1,5 +1,10 @@
 cors:
   originPatterns: http://localhost:8080,https://chrm.com.br,http://localhost:3000
+security:
+  jwt:
+    token:
+      secret-key: minhascrt111
+      expire-length: 3600000
 # Configurar a porta que o spring vai abrir em ambiente de testes.
 spring:
   datasource:
@@ -14,6 +19,8 @@ spring:
 springdoc:
   swagger-ui:
     use-root-path: true
-  paths-to-match: /**/v1/**
+  paths-to-match:
+    - /**/v1/**
+    - /auth/**
 server:
   port: 8888
