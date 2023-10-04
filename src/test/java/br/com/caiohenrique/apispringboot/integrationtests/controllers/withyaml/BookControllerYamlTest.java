@@ -101,7 +101,6 @@ public class BookControllerYamlTest extends AbstractIntegrationTest {
     public void testCreate() throws IOException, ParseException {
         mockBook();
 
-        // Salvo o conteudo da página em uma variavel
         var persistedBook =
                 given().spec(specification)
                         .contentType(APPLICATION_YML)
@@ -116,7 +115,6 @@ public class BookControllerYamlTest extends AbstractIntegrationTest {
                         .extract()
                         .body().as(BookVO.class, objectMapper);
 
-        // Para transformar o valor criado em Vo e conseguir ler ele.
         bookVO = persistedBook;
 
         assertNotNull(persistedBook);
