@@ -1,9 +1,13 @@
-package br.com.caiohenrique.apispringboot.integrationtests.vo;
+package br.com.caiohenrique.apispringboot.integrationtests.vo.entities;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement
 public class PersonVO implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private Long id;

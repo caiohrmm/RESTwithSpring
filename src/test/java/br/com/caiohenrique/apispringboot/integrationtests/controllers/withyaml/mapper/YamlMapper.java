@@ -13,7 +13,7 @@ import io.restassured.mapper.ObjectMapperSerializationContext;
 // Então preciso customizar um Mapper novo para isso.
 public class YamlMapper implements ObjectMapper {
 
-    private com.fasterxml.jackson.databind.ObjectMapper objectMapper;
+    private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
     protected TypeFactory typeFactory;
 

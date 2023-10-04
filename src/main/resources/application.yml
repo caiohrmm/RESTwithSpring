@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/projetojpa?useTimezone=true?serverTimezone=UTC
-    username: caioh
-    password: projetojpa
+    url: jdbc:mysql://localhost:3306/apispringboot?useTimezone=true?serverTimezone=UTC
+    username: root
+    password: caio123
   jpa:
     hibernate:
       ddl-auto: none

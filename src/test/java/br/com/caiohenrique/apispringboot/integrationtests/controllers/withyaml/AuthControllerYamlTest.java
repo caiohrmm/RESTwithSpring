@@ -50,12 +50,10 @@ public class AuthControllerYamlTest extends AbstractIntegrationTest {
         tokenVO =
                 given()
                         .spec(specification)
-                        .config(RestAssuredConfig.config().
-                                encoderConfig(EncoderConfig.encoderConfig().
-                                        encodeContentTypeAs(APPLICATION_YML, ContentType.TEXT)
-                                ))
-                        .basePath("/auth/signin")
+                        .config(RestAssuredConfig.config().encoderConfig(EncoderConfig.encoderConfig()
+                                .encodeContentTypeAs(APPLICATION_YML, ContentType.TEXT)))
                         .accept(APPLICATION_YML)
+                        .basePath("/auth/signin")
                         .port(SERVER_PORT)
                         .contentType(APPLICATION_YML)
                         .body(userDefault, yamlMapper)
@@ -83,10 +81,9 @@ public class AuthControllerYamlTest extends AbstractIntegrationTest {
          var tokenVOWithRefresh =
                 given()
                         .spec(specification)
-                        .config(RestAssuredConfig.config().
-                                encoderConfig(EncoderConfig.encoderConfig().
-                                        encodeContentTypeAs(APPLICATION_YML, ContentType.TEXT)
-                                ))
+                        .config(RestAssuredConfig.config().encoderConfig(EncoderConfig.encoderConfig()
+                                .encodeContentTypeAs(APPLICATION_YML, ContentType.TEXT)))
+                        .accept(APPLICATION_YML)
                         .basePath("/auth/refresh")
                         .port(SERVER_PORT)
                         .contentType(APPLICATION_YML)
