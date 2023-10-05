@@ -7,6 +7,7 @@ import br.com.caiohenrique.exceptions.ResourceNotFoundException;
 import br.com.caiohenrique.mapper.DozerMapper;
 import br.com.caiohenrique.model.Person;
 import br.com.caiohenrique.repositories.PersonRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -79,6 +80,20 @@ public class PersonService {
         logger.info("Deleting one person...");
         Person entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No records found for this ID!"));
         repository.delete(entity);
+    }
+    @Transactional // Preciso da annotation para concluir o método customizado do repositório.
+    public PersonVO disablePersonById(Long id) {
+
+        logger.info("Disabling one person with id "+id);
+
+        // Desabilito o enabled da tabela Person
+        repository.disablePerson(id);
+
+        // Após desabilitado, retorno ao cliente o VO do objeto já alterado.
+        logger.info("Finding one person...");
+        var entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No records found for this ID!"));
+        return DozerMapper.parseObject(entity, PersonVO.class).add(linkTo(methodOn(PersonController.class).findById(id)).withSelfRel());
+
     }
 
 }
