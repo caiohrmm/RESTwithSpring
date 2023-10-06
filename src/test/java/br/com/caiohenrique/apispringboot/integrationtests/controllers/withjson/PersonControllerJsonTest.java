@@ -160,9 +160,45 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
 
     }
 
-
     @Test
     @Order(3)
+    public void testDisablePerson() throws IOException {
+
+        // Salvo o conteudo da página em uma variavel
+        var content =
+                given().spec(specification)
+                        .contentType(APPLICATION_JSON)
+                        .pathParam("id", personVO.getId())
+                        .when()
+                        .patch("disableperson/{id}")
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body().asString();
+
+        // Para transformar o valor criado em Vo e conseguir ler ele.
+        PersonVO persistedPerson = objectMapper.readValue(content, PersonVO.class);
+        personVO = persistedPerson;
+
+        assertNotNull(persistedPerson);
+        assertNotNull(persistedPerson.getId());
+        assertNotNull(persistedPerson.getFirstName());
+        assertNotNull(persistedPerson.getGender());
+        assertNotNull(persistedPerson.getAddress());
+        assertNotNull(persistedPerson.getLastName());
+        assertNotNull(persistedPerson.getEnabled());
+        assertEquals(persistedPerson.getId(), personVO.getId());
+
+        assertEquals("Pedro", persistedPerson.getFirstName());
+        assertEquals("Male", persistedPerson.getGender());
+        assertEquals("Maringá", persistedPerson.getAddress());
+        assertEquals("Arthur", persistedPerson.getLastName());
+        assertFalse(persistedPerson.getEnabled());
+    }
+
+
+    @Test
+    @Order(4)
     public void testFindById() throws IOException {
 
         // Salvo o conteudo da página em uma variavel
@@ -187,17 +223,19 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
         assertNotNull(persistedPerson.getGender());
         assertNotNull(persistedPerson.getAddress());
         assertNotNull(persistedPerson.getLastName());
+        assertNotNull(persistedPerson.getEnabled());
         assertEquals(persistedPerson.getId(), personVO.getId());
 
         assertEquals("Pedro", persistedPerson.getFirstName());
         assertEquals("Male", persistedPerson.getGender());
         assertEquals("Maringá", persistedPerson.getAddress());
         assertEquals("Arthur", persistedPerson.getLastName());
+        assertFalse(persistedPerson.getEnabled());
 
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     public void testDelete() throws IOException {
 
         // Salvo o conteudo da página em uma variavel
@@ -219,7 +257,7 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     public void testFindAll() throws IOException {
         mockPerson();
 
@@ -250,11 +288,12 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
         assertEquals("Male", personOne.getGender());
         assertEquals("SP", personOne.getAddress());
         assertEquals("Martins", personOne.getLastName());
+        assertTrue(personOne.getEnabled());
     }
 
 
     @Test
-    @Order(6)
+    @Order(7)
     public void testFindAllWithoutToken() throws IOException {
         mockPerson();
 
@@ -270,41 +309,5 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
                 .statusCode(403);
     }
 
-    @Test
-    @Order(7)
-    public void testDisablePerson() throws IOException {
 
-        personVO.setEnabled(false);
-
-        // Salvo o conteudo da página em uma variavel
-        var content =
-                given().spec(specification)
-                        .contentType(APPLICATION_JSON)
-                        .pathParam("id", personVO.getId())
-                        .when()
-                        .patch("{id}")
-                        .then()
-                        .statusCode(200)
-                        .extract()
-                        .body().asString();
-
-        // Para transformar o valor criado em Vo e conseguir ler ele.
-        PersonVO persistedPerson = objectMapper.readValue(content, PersonVO.class);
-        personVO = persistedPerson;
-
-        assertNotNull(persistedPerson);
-        assertNotNull(persistedPerson.getId());
-        assertNotNull(persistedPerson.getFirstName());
-        assertNotNull(persistedPerson.getGender());
-        assertNotNull(persistedPerson.getAddress());
-        assertNotNull(persistedPerson.getLastName());
-        assertNotNull(persistedPerson.getEnabled());
-        assertEquals(persistedPerson.getId(), personVO.getId());
-
-        assertEquals("Pedro", persistedPerson.getFirstName());
-        assertEquals("Male", persistedPerson.getGender());
-        assertEquals("Maringá", persistedPerson.getAddress());
-        assertEquals("Arthur", persistedPerson.getLastName());
-        assertFalse(persistedPerson.getEnabled());
-    }
 }
