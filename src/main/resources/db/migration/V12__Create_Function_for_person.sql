@@ -1,0 +1,14 @@
+DELIMITER $$
+CREATE FUNCTION fn_viewEnabledPersons(number TINYINT)
+    RETURNS VARCHAR(20) DETERMINISTIC
+BEGIN
+
+    IF number = 1 THEN
+        RETURN "SIM";
+    ELSEIF number = 0 THEN
+        RETURN "NÃO";
+    ELSE RETURN NULL;
+    END IF;
+
+END $$
+DELIMITER ;

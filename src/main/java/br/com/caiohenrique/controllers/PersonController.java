@@ -28,9 +28,6 @@ public class PersonController {
     @Autowired
     private PersonService service;
 
-    @Autowired
-    private JwtTokenProvider tokenProvider;
-
     @GetMapping(produces = {APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
     @Operation(summary = "Finds all People", description = "Find all people", tags = {"People"},
             responses = {

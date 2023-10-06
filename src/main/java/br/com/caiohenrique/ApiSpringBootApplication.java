@@ -10,12 +10,6 @@ public class ApiSpringBootApplication {
     public static void main(String[] args) {
         SpringApplication.run(ApiSpringBootApplication.class, args);
 
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-        String senha = passwordEncoder.encode("admin123");
-
-        //System.out.println(senha);
-
     }
 
 }
