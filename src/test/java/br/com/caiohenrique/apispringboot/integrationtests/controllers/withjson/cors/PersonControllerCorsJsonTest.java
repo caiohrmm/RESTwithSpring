@@ -103,12 +103,14 @@ public class PersonControllerCorsJsonTest extends AbstractIntegrationTest {
         assertNotNull(persistedPerson.getGender());
         assertNotNull(persistedPerson.getAddress());
         assertNotNull(persistedPerson.getLastName());
+        assertNotNull(persistedPerson.getEnabled());
         assertTrue(persistedPerson.getId() > 0);
 
         assertEquals("Caio", persistedPerson.getFirstName());
         assertEquals("Male", persistedPerson.getGender());
         assertEquals("London", persistedPerson.getAddress());
         assertEquals("Henrique", persistedPerson.getLastName());
+        assertTrue(persistedPerson.getEnabled());
 
     }
 
@@ -139,6 +141,43 @@ public class PersonControllerCorsJsonTest extends AbstractIntegrationTest {
 
     @Test
     @Order(3)
+    public void testDisablePerson() throws IOException {
+
+        // Salvo o conteudo da página em uma variavel
+        var content =
+                given().spec(specification)
+                        .contentType(APPLICATION_JSON)
+                        .header(HEADER_PARAMS_ORIGIN, ORIGIN_CHRM)
+                        .pathParam("id", personVO.getId())
+                        .when()
+                        .patch("disableperson/{id}")
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body().asString();
+
+        // Para transformar o valor criado em Vo e conseguir ler ele.
+        PersonVO persistedPerson = objectMapper.readValue(content, PersonVO.class);
+        personVO = persistedPerson;
+
+        assertNotNull(persistedPerson);
+        assertNotNull(persistedPerson.getId());
+        assertNotNull(persistedPerson.getFirstName());
+        assertNotNull(persistedPerson.getGender());
+        assertNotNull(persistedPerson.getAddress());
+        assertNotNull(persistedPerson.getLastName());
+        assertNotNull(persistedPerson.getEnabled());
+        assertEquals(persistedPerson.getId(), personVO.getId());
+
+        assertEquals("Caio", persistedPerson.getFirstName());
+        assertEquals("Male", persistedPerson.getGender());
+        assertEquals("London", persistedPerson.getAddress());
+        assertEquals("Henrique", persistedPerson.getLastName());
+        assertFalse(persistedPerson.getEnabled());
+    }
+
+    @Test
+    @Order(4)
     public void testFindById() throws IOException {
 
         // Salvo o conteudo da página em uma variavel
@@ -164,19 +203,20 @@ public class PersonControllerCorsJsonTest extends AbstractIntegrationTest {
         assertNotNull(persistedPerson.getGender());
         assertNotNull(persistedPerson.getAddress());
         assertNotNull(persistedPerson.getLastName());
+        assertNotNull(persistedPerson.getEnabled());
         assertTrue(persistedPerson.getId() > 0);
 
         assertEquals("Caio", persistedPerson.getFirstName());
         assertEquals("Male", persistedPerson.getGender());
         assertEquals("London", persistedPerson.getAddress());
         assertEquals("Henrique", persistedPerson.getLastName());
+        assertFalse(persistedPerson.getEnabled());
 
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     public void testFindByIdWithWrongOrigin() throws IOException {
-
 
         // Salvo o conteudo da página em uma variavel
         var content =
@@ -202,6 +242,7 @@ public class PersonControllerCorsJsonTest extends AbstractIntegrationTest {
         personVO.setLastName("Henrique");
         personVO.setAddress("London");
         personVO.setGender("Male");
+        personVO.setEnabled(true);
     }
 
 
