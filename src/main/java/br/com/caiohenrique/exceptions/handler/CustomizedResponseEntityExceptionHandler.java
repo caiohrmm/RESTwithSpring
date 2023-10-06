@@ -2,8 +2,7 @@ package br.com.caiohenrique.exceptions.handler;
 
 import java.time.LocalDateTime;
 
-import br.com.caiohenrique.exceptions.InvalidJWTAuthenticationException;
-import br.com.caiohenrique.exceptions.RequiredObjectIsNullException;
+import br.com.caiohenrique.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -12,8 +11,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
-import br.com.caiohenrique.exceptions.ExceptionResponse;
-import br.com.caiohenrique.exceptions.ResourceNotFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 // Concentrar tratamento espalhado em todos os controllers.

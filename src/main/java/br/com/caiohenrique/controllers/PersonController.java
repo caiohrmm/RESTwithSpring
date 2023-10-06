@@ -1,6 +1,7 @@
 package br.com.caiohenrique.controllers;
 
 import br.com.caiohenrique.data.valueobjects.v1.PersonVO;
+import br.com.caiohenrique.security.jwt.JwtTokenProvider;
 import br.com.caiohenrique.services.PersonService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -27,6 +28,9 @@ public class PersonController {
     @Autowired
     private PersonService service;
 
+    @Autowired
+    private JwtTokenProvider tokenProvider;
+
     @GetMapping(produces = {APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
     @Operation(summary = "Finds all People", description = "Find all people", tags = {"People"},
             responses = {
@@ -51,7 +55,8 @@ public class PersonController {
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),
             })
     public List<PersonVO> findAllPersons() {
-        return service.findAllPersons();
+
+            return service.findAllPersons();
     }
 
     @GetMapping(value = "/{id}", produces = {APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
@@ -144,7 +149,10 @@ public class PersonController {
             })
     public PersonVO disablePersonById(@PathVariable(value = "id") Long id) {
 
-        return service.disablePersonById(id);
+            return service.disablePersonById(id);
+
+
+
     }
 
 }
