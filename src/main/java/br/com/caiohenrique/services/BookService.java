@@ -1,15 +1,20 @@
 package br.com.caiohenrique.services;
 
-import br.com.caiohenrique.config.WebConfig;
 import br.com.caiohenrique.controllers.BookController;
+import br.com.caiohenrique.controllers.PersonController;
 import br.com.caiohenrique.data.valueobjects.v1.BookVO;
+import br.com.caiohenrique.data.valueobjects.v1.PersonVO;
 import br.com.caiohenrique.exceptions.RequiredObjectIsNullException;
 import br.com.caiohenrique.exceptions.ResourceNotFoundException;
 import br.com.caiohenrique.mapper.DozerMapper;
 import br.com.caiohenrique.model.Book;
-import br.com.caiohenrique.model.Person;
 import br.com.caiohenrique.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,6 +30,9 @@ public class BookService {
     @Autowired
     private BookRepository repository;
 
+    @Autowired
+    private PagedResourcesAssembler<BookVO> assembler;
+
     // Find one Book
     public BookVO findById(Long id) {
         logger.info("Finding one book...");
@@ -32,15 +40,21 @@ public class BookService {
         return DozerMapper.parseObject(entity, BookVO.class).add(linkTo(methodOn(BookController.class).findBookById(id)).withSelfRel());
     }
 
-    // Find All Persons
-    public List<BookVO> findAllBooks() {
-        logger.info("Finding all books...");
+    // Find All Books
+    public PagedModel<EntityModel<BookVO>> findAllBooks(Pageable pageable) {
+        logger.info("Finding all persons...");
 
         // Irei criar um loop para adicionar os links para cada objeto da lista.
-        var books = DozerMapper.parseListObjects(repository.findAll(), BookVO.class);
+        var pageBooks = repository.findAll(pageable);
+        var listVoBooks = pageBooks.map(b -> DozerMapper.parseObject(b, BookVO.class));
 
-        books.forEach(book -> book.add(linkTo(methodOn(BookController.class).findBookById(book.getKey())).withSelfRel()));
-        return books;
+        listVoBooks.map(b ->  b.add(linkTo(methodOn(BookController.class)
+                .findBookById(b.getKey())).withSelfRel()));
+
+        Link link = linkTo(methodOn(BookController.class)
+                .findAllBooks(pageable.getPageNumber(), pageable.getPageSize(), "asc")).withSelfRel();
+
+        return assembler.toModel(listVoBooks, link);
     }
 
     // Creating person

@@ -10,6 +10,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,9 +57,26 @@ public class PersonController {
                     @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),
             })
-    public List<PersonVO> findAllPersons() {
 
-            return service.findAllPersons();
+    // Não retorno mais uma lista e sim uma paginação de VOs.
+    public ResponseEntity<PagedModel<EntityModel<PersonVO>>> findAllPersons(
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam (value = "size", defaultValue = "15") Integer size,
+            @RequestParam (value = "direction", defaultValue = "asc") String direction
+    ) {
+            // Não consigo usar o direction como String no parâmetro do pageable, farei conversão
+
+            var sortDirection = "desc".equalsIgnoreCase(direction) ?
+                    Sort.Direction.DESC :
+                    Sort.Direction.ASC;
+            // Fiz uma operação com operadores ternários, mas é um if comum.
+
+
+            // Configuração da página como parâmetro do findAll.
+            // Sort.by(direction, atributo da minha entidade a qual quero ordenar)
+            Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, "firstName"));
+
+            return ResponseEntity.ok(service.findAllPersons(pageable));
     }
 
     @GetMapping(value = "/{id}", produces = {APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
@@ -147,8 +170,6 @@ public class PersonController {
     public PersonVO disablePersonById(@PathVariable(value = "id") Long id) {
 
             return service.disablePersonById(id);
-
-
 
     }
 

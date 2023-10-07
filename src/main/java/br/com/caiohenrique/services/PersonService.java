@@ -9,9 +9,13 @@ import br.com.caiohenrique.model.Person;
 import br.com.caiohenrique.repositories.PersonRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -25,6 +29,11 @@ public class PersonService {
     @Autowired
     private PersonRepository repository;
 
+    @Autowired
+    PagedResourcesAssembler<PersonVO> assembler;
+
+
+
     // Find One Person
     public PersonVO findById(Long id) {
         logger.info("Finding one person...");
@@ -33,14 +42,20 @@ public class PersonService {
     }
 
     // Find All Persons
-    public List<PersonVO> findAllPersons() {
+    public PagedModel<EntityModel<PersonVO>> findAllPersons(Pageable pageable) {
         logger.info("Finding all persons...");
 
         // Irei criar um loop para adicionar os links para cada objeto da lista.
-        var persons = DozerMapper.parseListObjects(repository.findAll(), PersonVO.class);
+        var pagePersons = repository.findAll(pageable);
+        var listVoPersons = pagePersons.map(p -> DozerMapper.parseObject(p, PersonVO.class));
 
-        persons.forEach(person -> person.add(linkTo(methodOn(PersonController.class).findById(person.getKey())).withSelfRel()));
-        return persons;
+        listVoPersons.map(p ->  p.add(linkTo(methodOn(PersonController.class)
+                .findById(p.getKey())).withSelfRel()));
+
+        Link link = linkTo(methodOn(PersonController.class)
+                .findAllPersons(pageable.getPageNumber(), pageable.getPageSize(), "asc")).withSelfRel();
+
+        return assembler.toModel(listVoPersons, link);
     }
 
     // Creating person
