@@ -5,6 +5,7 @@ import br.com.caiohenrique.apispringboot.integrationtests.vo.authorization.Accou
 import br.com.caiohenrique.apispringboot.integrationtests.vo.authorization.TokenVO;
 import br.com.caiohenrique.apispringboot.integrationtests.vo.entities.BookVO;
 import br.com.caiohenrique.apispringboot.integrationtests.vo.entities.PersonVO;
+import br.com.caiohenrique.apispringboot.integrationtests.vo.wrappers.book.WrapperBookVO;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -231,24 +232,25 @@ public class BookControllerJsonTest extends AbstractIntegrationTest {
         var content =
                 given().spec(specification)
                         .contentType(APPLICATION_JSON)
+                        .queryParams("page", 1 , "size", 15, "direction", "asc")
                         .when()
                         .get()
                         .then()
                         .statusCode(200)
                         .extract()
                         .body().asString();
-        List<BookVO> library = objectMapper.readValue(content, new TypeReference<List<BookVO>>() {
-        });
+
+        WrapperBookVO pagedModel = objectMapper.readValue(content, WrapperBookVO.class);
 
 
         // Para transformar o valor criado em Vo e conseguir ler ele.
+        var library = pagedModel.getEmbedded().books;
         BookVO bookOne = library.get(0);
 
-        assertEquals(bookOne.getKey(), 1);
-
-        assertEquals("Michael C. Feathers", bookOne.getAuthor());
-        assertEquals("Working effectively with legacy code", bookOne.getTitle());
-        assertEquals(49.00, bookOne.getPrice());
+        assertEquals(bookOne.getKey(), 1011);
+        assertEquals("Afton Slader", bookOne.getAuthor());
+        assertEquals("Good Year, A", bookOne.getTitle());
+        assertEquals(369.05, bookOne.getPrice());
     }
 
     @Test

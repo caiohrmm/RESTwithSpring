@@ -1,7 +1,6 @@
 package br.com.caiohenrique.services;
 
 import br.com.caiohenrique.controllers.BookController;
-import br.com.caiohenrique.controllers.PersonController;
 import br.com.caiohenrique.data.valueobjects.v1.BookVO;
 import br.com.caiohenrique.data.valueobjects.v1.PersonVO;
 import br.com.caiohenrique.exceptions.RequiredObjectIsNullException;
@@ -17,7 +16,6 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -47,6 +45,23 @@ public class BookService {
         // Irei criar um loop para adicionar os links para cada objeto da lista.
         var pageBooks = repository.findAll(pageable);
         var listVoBooks = pageBooks.map(b -> DozerMapper.parseObject(b, BookVO.class));
+
+        listVoBooks.map(b ->  b.add(linkTo(methodOn(BookController.class)
+                .findBookById(b.getKey())).withSelfRel()));
+
+        Link link = linkTo(methodOn(BookController.class)
+                .findAllBooks(pageable.getPageNumber(), pageable.getPageSize(), "asc")).withSelfRel();
+
+        return assembler.toModel(listVoBooks, link);
+    }
+
+    // Find Person By Firstname
+    public PagedModel<EntityModel<BookVO>> findBookByTitle(Pageable pageable, String title) {
+        logger.info("Finding book by title... "+title);
+
+        // Irei criar um loop para adicionar os links para cada objeto da lista.
+        var listVoBooks = repository.findBookByTitle(title, pageable)
+                .map(p -> DozerMapper.parseObject(p, BookVO.class));
 
         listVoBooks.map(b ->  b.add(linkTo(methodOn(BookController.class)
                 .findBookById(b.getKey())).withSelfRel()));

@@ -1,4 +1,4 @@
-package br.com.caiohenrique.apispringboot.integrationtests.vo.wrappers;
+package br.com.caiohenrique.apispringboot.integrationtests.vo.wrappers.person;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.xml.bind.annotation.XmlRootElement;

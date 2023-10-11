@@ -59,13 +59,13 @@ public class PersonService {
     }
 
 
-    // Find All Persons
+    // Find Person By Firstname
     public PagedModel<EntityModel<PersonVO>> findPersonByName(Pageable pageable, String firstName) {
-        logger.info("Finding all persons...");
+        logger.info("Finding person by " +firstName );
 
         // Irei criar um loop para adicionar os links para cada objeto da lista.
-        var pagePersons = repository.findPersonByName(firstName, pageable);
-        var listVoPersons = pagePersons.map(p -> DozerMapper.parseObject(p, PersonVO.class));
+        var listVoPersons = repository.findPersonByName(firstName, pageable)
+                .map(p -> DozerMapper.parseObject(p, PersonVO.class));
 
         listVoPersons.map(p ->  p.add(linkTo(methodOn(PersonController.class)
                 .findById(p.getKey())).withSelfRel()));

@@ -4,8 +4,7 @@ import br.com.caiohenrique.apispringboot.integrationtests.testcontainers.Abstrac
 import br.com.caiohenrique.apispringboot.integrationtests.vo.authorization.AccountCredentialsVO;
 import br.com.caiohenrique.apispringboot.integrationtests.vo.authorization.TokenVO;
 import br.com.caiohenrique.apispringboot.integrationtests.vo.entities.PersonVO;
-import br.com.caiohenrique.apispringboot.integrationtests.vo.wrappers.WrapperPersonVO;
-import com.fasterxml.jackson.core.type.TypeReference;
+import br.com.caiohenrique.apispringboot.integrationtests.vo.pagedmodels.PagedModelPerson;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.restassured.builder.RequestSpecBuilder;
@@ -17,11 +16,9 @@ import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
-import java.util.List;
 
 import static br.com.caiohenrique.apispringboot.configs.TestConfigs.HEADER_PARAMS_AUTHORIZATION;
 import static br.com.caiohenrique.apispringboot.configs.TestConfigs.SERVER_PORT;
-import static br.com.caiohenrique.util.MediaType.APPLICATION_JSON;
 import static br.com.caiohenrique.util.MediaType.APPLICATION_XML;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
@@ -268,24 +265,25 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest {
                 given().spec(specification)
                         .contentType(APPLICATION_XML)
                         .accept(APPLICATION_XML)
+                        .queryParams("page", 1 , "size", 15, "direction", "asc")
                         .when()
                         .get()
                         .then()
                         .statusCode(200)
                         .extract()
                         .body().asString();
-        WrapperPersonVO wrapper = objectMapper.readValue(content, WrapperPersonVO.class);
-        var people = wrapper.getEmbedded().getPersons();
+        PagedModelPerson pagedModel = objectMapper.readValue(content, PagedModelPerson.class);
+        var people = pagedModel.getContent();
 
         // Para transformar o valor criado em Vo e conseguir ler ele.
         PersonVO personOne = people.get(0);
         personVO = personOne;
 
-        assertEquals(personOne.getId(), 1);
+        assertEquals(personOne.getId(), 303);
 
-        assertEquals("Dot", personOne.getFirstName());
-        assertEquals("Dreamer", personOne.getLastName());
-        assertEquals("16803 Monument Pass", personOne.getAddress());
+        assertEquals("Aili", personOne.getFirstName());
+        assertEquals("Tuxwell", personOne.getLastName());
+        assertEquals("7803 Darwin Pass", personOne.getAddress());
         assertEquals("Female", personOne.getGender());
         assertTrue(personOne.getEnabled());
     }

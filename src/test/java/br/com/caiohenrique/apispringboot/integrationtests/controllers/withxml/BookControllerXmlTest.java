@@ -4,6 +4,7 @@ import br.com.caiohenrique.apispringboot.integrationtests.testcontainers.Abstrac
 import br.com.caiohenrique.apispringboot.integrationtests.vo.authorization.AccountCredentialsVO;
 import br.com.caiohenrique.apispringboot.integrationtests.vo.authorization.TokenVO;
 import br.com.caiohenrique.apispringboot.integrationtests.vo.entities.BookVO;
+import br.com.caiohenrique.apispringboot.integrationtests.vo.pagedmodels.PagedModelBook;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -234,23 +235,23 @@ public class BookControllerXmlTest extends AbstractIntegrationTest {
                 given().spec(specification)
                         .contentType(APPLICATION_XML)
                         .accept(APPLICATION_XML)
+                        .queryParams("page", 1 , "size", 15, "direction", "asc")
                         .when()
                         .get()
                         .then()
                         .statusCode(200)
                         .extract()
                         .body().asString();
-        List<BookVO> library = objectMapper.readValue(content, new TypeReference<List<BookVO>>() {});
+        PagedModelBook pagedModel = objectMapper.readValue(content, PagedModelBook.class);
 
-
-        // Para transformar o valor criado em Vo e conseguir ler ele.
+        // Pegando o primeiro book da lista.
+        var library = pagedModel.getContent();
         BookVO bookOne = library.get(0);
 
-        assertEquals(bookOne.getKey(), 1);
-
-        assertEquals("Michael C. Feathers", bookOne.getAuthor());
-        assertEquals("Working effectively with legacy code", bookOne.getTitle());
-        assertEquals(49.00, bookOne.getPrice());
+        assertEquals(bookOne.getKey(), 1011);
+        assertEquals("Afton Slader", bookOne.getAuthor());
+        assertEquals("Good Year, A", bookOne.getTitle());
+        assertEquals(369.05, bookOne.getPrice());
     }
 
     @Test

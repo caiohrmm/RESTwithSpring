@@ -5,6 +5,7 @@ import br.com.caiohenrique.apispringboot.integrationtests.testcontainers.Abstrac
 import br.com.caiohenrique.apispringboot.integrationtests.vo.authorization.AccountCredentialsVO;
 import br.com.caiohenrique.apispringboot.integrationtests.vo.authorization.TokenVO;
 import br.com.caiohenrique.apispringboot.integrationtests.vo.entities.PersonVO;
+import br.com.caiohenrique.apispringboot.integrationtests.vo.pagedmodels.PagedModelPerson;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -273,7 +274,6 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
     @Test
     @Order(6)
     public void testFindAll() throws IOException {
-        mockPerson();
 
         // O TestContainers le as migrations e cria o banco de testes de acordo com elas.
         // Content chega em lista.
@@ -283,27 +283,28 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
                 given().spec(specification)
                         .contentType(APPLICATION_YML)
                         .accept(APPLICATION_YML)
+                        .queryParams("page", 1 , "size", 15, "direction", "asc")
                         .when()
                         .get()
                         .then()
                         .statusCode(200)
                         .extract()
-                        .body().as(PersonVO[].class, objectMapper);
+                        .body().as(PagedModelPerson.class, objectMapper);
 
         // Para transformar o valor criado em Vo e conseguir ler ele.
-        List<PersonVO> people = Arrays.asList(contentList);
+        List<PersonVO> people = contentList.getContent();
 
 
         // Para transformar o valor criado em Vo e conseguir ler ele.
         PersonVO personOne = people.get(0);
         personVO = personOne;
 
-        assertEquals(personOne.getId(), 1);
+        assertEquals(personOne.getId(), 303);
 
-        assertEquals("Caio Henrique Rodrigues", personOne.getFirstName());
-        assertEquals("Male", personOne.getGender());
-        assertEquals("SP", personOne.getAddress());
-        assertEquals("Martins", personOne.getLastName());
+        assertEquals("Aili", personOne.getFirstName());
+        assertEquals("Tuxwell", personOne.getLastName());
+        assertEquals("7803 Darwin Pass", personOne.getAddress());
+        assertEquals("Female", personOne.getGender());
         assertTrue(personOne.getEnabled());
     }
 

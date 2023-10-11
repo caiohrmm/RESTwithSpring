@@ -4,7 +4,7 @@ import br.com.caiohenrique.apispringboot.integrationtests.testcontainers.Abstrac
 import br.com.caiohenrique.apispringboot.integrationtests.vo.authorization.AccountCredentialsVO;
 import br.com.caiohenrique.apispringboot.integrationtests.vo.authorization.TokenVO;
 import br.com.caiohenrique.apispringboot.integrationtests.vo.entities.PersonVO;
-import br.com.caiohenrique.apispringboot.integrationtests.vo.wrappers.WrapperPersonVO;
+import br.com.caiohenrique.apispringboot.integrationtests.vo.wrappers.person.WrapperPersonVO;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -12,12 +12,10 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.testcontainers.shaded.com.fasterxml.jackson.core.type.TypeReference;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.DeserializationFeature;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.util.List;
 
 import static br.com.caiohenrique.apispringboot.configs.TestConfigs.*;
 import static br.com.caiohenrique.util.MediaType.APPLICATION_JSON;

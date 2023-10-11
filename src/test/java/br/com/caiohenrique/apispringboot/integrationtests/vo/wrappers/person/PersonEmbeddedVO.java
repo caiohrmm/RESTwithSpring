@@ -1,4 +1,4 @@
-package br.com.caiohenrique.apispringboot.integrationtests.vo.wrappers;
+package br.com.caiohenrique.apispringboot.integrationtests.vo.wrappers.person;
 
 import br.com.caiohenrique.apispringboot.integrationtests.vo.entities.PersonVO;
 import com.fasterxml.jackson.annotation.JsonProperty;
