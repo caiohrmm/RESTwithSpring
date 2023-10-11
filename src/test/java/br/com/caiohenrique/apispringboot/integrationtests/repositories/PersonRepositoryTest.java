@@ -16,8 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
@@ -48,12 +47,31 @@ public class PersonRepositoryTest extends AbstractIntegrationTest {
         person = repository.findPersonByName(firstName, pageable).getContent().get(0);
 
         assertEquals(person.getId(), 438);
-
         assertEquals("Berkeley", person.getFirstName());
         assertEquals("Button", person.getLastName());
         assertEquals("77 Mifflin Plaza", person.getAddress());
         assertEquals("Male", person.getGender());
         assertTrue(person.getEnabled());
+    }
+
+    @Test
+    @Order(2)
+    public void testDisablePerson() throws IOException {
+
+        repository.disablePerson(person.getId());
+
+        Pageable pageable = PageRequest.of(1, 15,
+                Sort.by(Sort.Direction.ASC, "firstName"));
+
+        String firstName = "be";
+        person = repository.findPersonByName(firstName, pageable).getContent().get(0);
+
+        assertEquals(person.getId(), 438);
+        assertEquals("Berkeley", person.getFirstName());
+        assertEquals("Button", person.getLastName());
+        assertEquals("77 Mifflin Plaza", person.getAddress());
+        assertEquals("Male", person.getGender());
+        assertFalse(person.getEnabled());
     }
 
 
