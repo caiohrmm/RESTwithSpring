@@ -262,6 +262,42 @@ public class BookControllerYamlTest extends AbstractIntegrationTest {
 
     @Test
     @Order(6)
+    public void testFindBookByTitle() throws IOException, ParseException {
+
+        // O TestContainers le as migrations e cria o banco de testes de acordo com elas.
+        // Content chega em lista.
+
+        String title = "se";
+
+        // Salvo o conteúdo da página em uma variável
+        var contentList =
+                given().spec(specification)
+                        .contentType(APPLICATION_YML)
+                        .accept(APPLICATION_YML)
+                        .queryParams("page", 1 , "size", 15, "direction", "desc")
+                        .pathParam("title", title)
+                        .when()
+                        .get("/findBookByTitle/{title}")
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body().as(PagedModelBook.class, objectMapper);
+
+        var library = contentList.getContent();
+
+        // Para transformar o valor criado em Vo e conseguir ler ele.
+        BookVO bookOne = library.get(0);
+
+
+        assertEquals(bookOne.getKey(), 544);
+        assertEquals("Rennie Melin", bookOne.getAuthor());
+        assertEquals("I Never Promised You a Rose Garden", bookOne.getTitle());
+        assertEquals(377.0, bookOne.getPrice());
+        assertNotNull(bookOne.getLaunchDate());
+    }
+
+    @Test
+    @Order(7)
     public void testFindAllWithoutToken() throws IOException {
         // O TestContainers le as migrations e cria o banco de testes de acordo com elas.
         // Content chega em lista.

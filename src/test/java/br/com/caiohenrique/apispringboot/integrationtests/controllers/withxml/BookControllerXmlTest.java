@@ -256,6 +256,41 @@ public class BookControllerXmlTest extends AbstractIntegrationTest {
 
     @Test
     @Order(6)
+    public void testFindBookByTitle() throws IOException, ParseException {
+
+        // O TestContainers le as migrations e cria o banco de testes de acordo com elas.
+        // Content chega em lista.
+
+        String title = "se";
+
+        // Salvo o conteúdo da página em uma variável
+        var content =
+                given().spec(specification)
+                        .contentType(APPLICATION_XML)
+                        .accept(APPLICATION_XML)
+                        .queryParams("page", 1 , "size", 15, "direction", "desc")
+                        .pathParam("title", title)
+                        .when()
+                        .get("/findBookByTitle/{title}")
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body().asString();
+        PagedModelBook pagedModel = objectMapper.readValue(content, PagedModelBook.class);
+
+        // Pegando o primeiro book da lista.
+        var library = pagedModel.getContent();
+        BookVO bookOne = library.get(0);
+
+        assertEquals(bookOne.getKey(), 544);
+        assertEquals("Rennie Melin", bookOne.getAuthor());
+        assertEquals("I Never Promised You a Rose Garden", bookOne.getTitle());
+        assertEquals(377.0, bookOne.getPrice());
+        assertNotNull(bookOne.getLaunchDate());
+    }
+
+    @Test
+    @Order(7)
     public void testFindAllWithoutToken() throws IOException {
         // O TestContainers le as migrations e cria o banco de testes de acordo com elas.
         // Content chega em lista.
