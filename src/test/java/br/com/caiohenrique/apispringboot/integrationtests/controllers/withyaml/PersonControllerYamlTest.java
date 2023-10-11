@@ -310,6 +310,44 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
 
     @Test
     @Order(7)
+    public void testFindPersonByFirstname() throws IOException {
+
+        // O TestContainers le as migrations e cria o banco de testes de acordo com elas.
+        // Content chega em lista.
+
+        String firstName = "be";
+
+        // Salvo o conteúdo da página em uma variável
+        var contentList =
+                given().spec(specification)
+                        .contentType(APPLICATION_YML)
+                        .accept(APPLICATION_YML)
+                        .pathParam("firstName", firstName)
+                        .queryParams("page", 1 , "size", 15, "direction", "asc")
+                        .when()
+                        .get("/findByName/{firstName}")
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body().as(PagedModelPerson.class, objectMapper);
+
+        // Para transformar o valor criado em Vo e conseguir ler ele.
+        List<PersonVO> people = contentList.getContent();
+
+
+        // Para transformar o valor criado em Vo e conseguir ler ele.
+        PersonVO personOne = people.get(0);
+
+        assertEquals(personOne.getId(), 438);
+        assertEquals("Berkeley", personOne.getFirstName());
+        assertEquals("Button", personOne.getLastName());
+        assertEquals("77 Mifflin Plaza", personOne.getAddress());
+        assertEquals("Male", personOne.getGender());
+        assertTrue(personOne.getEnabled());
+    }
+
+    @Test
+    @Order(8)
     public void testFindAllWithoutToken() throws IOException {
         mockPerson();
 

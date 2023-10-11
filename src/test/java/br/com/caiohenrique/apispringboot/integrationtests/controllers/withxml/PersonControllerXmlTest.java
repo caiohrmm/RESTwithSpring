@@ -251,8 +251,6 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest {
                 .statusCode(204);
     }
 
-
-
     @Test
     @Order(6)
     public void testFindAll() throws IOException {
@@ -288,8 +286,45 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest {
         assertTrue(personOne.getEnabled());
     }
 
+
+
     @Test
     @Order(7)
+    public void testFindPersonByFirstname() throws IOException {
+
+        // O TestContainers le as migrations e cria o banco de testes de acordo com elas.
+        // Content chega em lista.
+        // Salvo o conteúdo da página em uma variável
+
+        String firstName = "be";
+        var content =
+                given().spec(specification)
+                        .contentType(APPLICATION_XML)
+                        .accept(APPLICATION_XML)
+                        .pathParam("firstName", firstName)
+                        .queryParams("page", 1 , "size", 15, "direction", "asc")
+                        .when()
+                        .get("/findByName/{firstName}")
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body().asString();
+        PagedModelPerson pagedModel = objectMapper.readValue(content, PagedModelPerson.class);
+        var people = pagedModel.getContent();
+
+        // Para transformar o valor criado em Vo e conseguir ler ele.
+        PersonVO personOne = people.get(0);
+
+        assertEquals(personOne.getId(), 438);
+        assertEquals("Berkeley", personOne.getFirstName());
+        assertEquals("Button", personOne.getLastName());
+        assertEquals("77 Mifflin Plaza", personOne.getAddress());
+        assertEquals("Male", personOne.getGender());
+        assertTrue(personOne.getEnabled());
+    }
+
+    @Test
+    @Order(8)
     public void testFindAllWithoutToken() throws IOException {
         mockPerson();
 
