@@ -2,6 +2,8 @@ package br.com.caiohenrique.repositories;
 
 import br.com.caiohenrique.model.Person;
 import br.com.caiohenrique.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -15,4 +17,7 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
     @Query("UPDATE Person p SET p.enabled = false WHERE p.id = :id")
     void disablePerson(@Param("id") Long id);
     // Nao confundir o Query do JPA com o do SQL, esse busca os dados do objeto e nao dá tabela.
+
+    @Query("SELECT p FROM Person p WHERE p.firstName LIKE LOWER(CONCAT('%', :firstName,'%'))")
+    Page<Person> findPersonByName(@Param("firstName") String firstName, Pageable pageable);
 }

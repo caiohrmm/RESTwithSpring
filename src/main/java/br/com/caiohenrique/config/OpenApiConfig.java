@@ -11,7 +11,6 @@ public class OpenApiConfig {
 
     @Bean
     OpenAPI customOpenApi() {
-
         return new OpenAPI().info(new Info().
                 title("RESTful API by Caio Henrique with Spring Boot.").
                 version("v1").
@@ -21,5 +20,4 @@ public class OpenApiConfig {
                         name("Apache 2.0").
                         url("https://github.com/caiohrmm/RESTwithSpring")));
     }
-
 }

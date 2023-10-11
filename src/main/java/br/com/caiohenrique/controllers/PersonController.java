@@ -79,6 +79,52 @@ public class PersonController {
             return ResponseEntity.ok(service.findAllPersons(pageable));
     }
 
+    @GetMapping(value = "/findByName/{firstName}",produces = {APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
+    @Operation(summary = "Finds people by name", description = "Find people by name", tags = {"People"},
+            responses = {
+                    @ApiResponse(description = "Success", responseCode = "200",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(schema = @Schema(implementation = PersonVO.class))
+                                    ), @Content(
+                                    mediaType = "application/xml",
+                                    array = @ArraySchema(schema = @Schema(implementation = PersonVO.class))
+                            ),
+                                    @Content(
+                                            mediaType = "application/x-yaml",
+                                            array = @ArraySchema(schema = @Schema(implementation = PersonVO.class))
+                                    )
+                            }),
+
+                    @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
+                    @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content),
+            })
+
+    // Não retorno mais uma lista e sim uma paginação de VOs.
+    public ResponseEntity<PagedModel<EntityModel<PersonVO>>> findPersonByName(
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam (value = "size", defaultValue = "15") Integer size,
+            @RequestParam (value = "direction", defaultValue = "asc") String direction,
+            @PathVariable(value = "firstName") String firstName
+    ) {
+            // Não consigo usar o direction como String no parâmetro do pageable, farei conversão
+
+            var sortDirection = "desc".equalsIgnoreCase(direction) ?
+                    Sort.Direction.DESC :
+                    Sort.Direction.ASC;
+            // Fiz uma operação com operadores ternários, mas é um if comum.
+
+
+            // Configuração da página como parâmetro do findAll.
+            // Sort.by(direction, atributo da minha entidade a qual quero ordenar)
+            Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, "firstName"));
+
+            return ResponseEntity.ok(service.findPersonByName(pageable, firstName));
+    }
+
     @GetMapping(value = "/{id}", produces = {APPLICATION_JSON, APPLICATION_XML, APPLICATION_YML})
     @Operation(summary = "Find a Person", description = "Find a person", tags = {"People"},
             responses = {

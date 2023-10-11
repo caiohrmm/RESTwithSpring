@@ -4,6 +4,7 @@ import br.com.caiohenrique.apispringboot.integrationtests.testcontainers.Abstrac
 import br.com.caiohenrique.apispringboot.integrationtests.vo.authorization.AccountCredentialsVO;
 import br.com.caiohenrique.apispringboot.integrationtests.vo.authorization.TokenVO;
 import br.com.caiohenrique.apispringboot.integrationtests.vo.entities.PersonVO;
+import br.com.caiohenrique.apispringboot.integrationtests.vo.wrappers.WrapperPersonVO;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -258,7 +259,6 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest {
     @Test
     @Order(6)
     public void testFindAll() throws IOException {
-        mockPerson();
 
         // O TestContainers le as migrations e cria o banco de testes de acordo com elas.
         // Content chega em lista.
@@ -274,9 +274,8 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest {
                         .statusCode(200)
                         .extract()
                         .body().asString();
-        List<PersonVO> people = objectMapper.readValue(content, new TypeReference<List<PersonVO>>() {
-        });
-
+        WrapperPersonVO wrapper = objectMapper.readValue(content, WrapperPersonVO.class);
+        var people = wrapper.getEmbedded().getPersons();
 
         // Para transformar o valor criado em Vo e conseguir ler ele.
         PersonVO personOne = people.get(0);
@@ -284,10 +283,10 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest {
 
         assertEquals(personOne.getId(), 1);
 
-        assertEquals("Caio Henrique Rodrigues", personOne.getFirstName());
-        assertEquals("Male", personOne.getGender());
-        assertEquals("SP", personOne.getAddress());
-        assertEquals("Martins", personOne.getLastName());
+        assertEquals("Dot", personOne.getFirstName());
+        assertEquals("Dreamer", personOne.getLastName());
+        assertEquals("16803 Monument Pass", personOne.getAddress());
+        assertEquals("Female", personOne.getGender());
         assertTrue(personOne.getEnabled());
     }
 
