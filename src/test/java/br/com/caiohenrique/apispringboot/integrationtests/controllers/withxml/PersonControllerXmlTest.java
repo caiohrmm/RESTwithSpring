@@ -19,6 +19,7 @@ import java.io.IOException;
 
 import static br.com.caiohenrique.apispringboot.configs.TestConfigs.HEADER_PARAMS_AUTHORIZATION;
 import static br.com.caiohenrique.apispringboot.configs.TestConfigs.SERVER_PORT;
+import static br.com.caiohenrique.util.MediaType.APPLICATION_JSON;
 import static br.com.caiohenrique.util.MediaType.APPLICATION_XML;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
@@ -347,6 +348,50 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest {
         personVO.setAddress("Maringá");
         personVO.setGender("Male");
         personVO.setEnabled(true);
+    }
+
+    @Test
+    @Order(9)
+    public void testHATEOAS() throws IOException {
+
+        // O TestContainers le as migrations e cria o banco de testes de acordo com elas.
+        // Content chega em lista.
+
+        // Salvo o conteúdo da página em uma variável
+        var content =
+                given().spec(specification)
+                        .contentType(APPLICATION_XML)
+                        .accept(APPLICATION_XML)
+                        .queryParams("page", 1 , "size", 15, "direction", "asc")
+                        .when()
+                        .get()
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body().asString();
+
+        // Links hateoas das persons
+        assertTrue(content.contains("<links><rel>self</rel><href>http://localhost:8888/persons/v1/303</href></links>"));
+        assertTrue(content.contains("<links><rel>self</rel><href>http://localhost:8888/persons/v1/768</href></links>"));
+        assertTrue(content.contains("<links><rel>self</rel><href>http://localhost:8888/persons/v1/44</href></links>"));
+        assertTrue(content.contains("<links><rel>self</rel><href>http://localhost:8888/persons/v1/291</href></links>"));
+        assertTrue(content.contains("<links><rel>self</rel><href>http://localhost:8888/persons/v1/818</href></links>"));
+
+
+
+        // Links das páginas
+        assertTrue(content.contains("<links><rel>first</rel><href>http://localhost:8888/persons/v1?direction=asc&amp;page=0&amp;size=15&amp;sort=firstName,asc</href></links>"));
+        assertTrue(content.contains("<links><rel>prev</rel><href>http://localhost:8888/persons/v1?direction=asc&amp;page=0&amp;size=15&amp;sort=firstName,asc</href></links>"));
+        assertTrue(content.contains("<links><rel>self</rel><href>http://localhost:8888/persons/v1?page=1&amp;size=15&amp;direction=asc</href></links>"));
+        assertTrue(content.contains("<links><rel>next</rel><href>http://localhost:8888/persons/v1?direction=asc&amp;page=2&amp;size=15&amp;sort=firstName,asc</href></links>"));
+        assertTrue(content.contains("<links><rel>last</rel><href>http://localhost:8888/persons/v1?direction=asc&amp;page=66&amp;size=15&amp;sort=firstName,asc</href></links>"));
+
+
+        // Informação das páginas
+        assertTrue(content.contains("<page><size>15</size><totalElements>1001</totalElements><totalPages>67</totalPages><number>1</number></page>"));
+
+
+
     }
 
 

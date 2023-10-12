@@ -291,6 +291,8 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
         assertTrue(personOne.getEnabled());
     }
 
+
+
     @Test
     @Order(7)
     public void testFindPersonByFirstname() throws IOException {
@@ -343,6 +345,48 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
                 .get()
                 .then()
                 .statusCode(403);
+    }
+
+    @Test
+    @Order(9)
+    public void testHATEOAS() throws IOException {
+
+        // O TestContainers le as migrations e cria o banco de testes de acordo com elas.
+        // Content chega em lista.
+
+        // Salvo o conteúdo da página em uma variável
+        var content =
+                given().spec(specification)
+                        .contentType(APPLICATION_JSON)
+                        .queryParams("page", 1 , "size", 15, "direction", "asc")
+                        .when()
+                        .get()
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body().asString();
+
+        // Links hateoas das persons
+        assertTrue(content.contains("\"_links\":{\"self\":{\"href\":\"http://localhost:8888/persons/v1/303\"}}}"));
+        assertTrue(content.contains("\"_links\":{\"self\":{\"href\":\"http://localhost:8888/persons/v1/768\"}}}"));
+        assertTrue(content.contains("\"_links\":{\"self\":{\"href\":\"http://localhost:8888/persons/v1/44\"}}}"));
+        assertTrue(content.contains("\"_links\":{\"self\":{\"href\":\"http://localhost:8888/persons/v1/291\"}}}"));
+        assertTrue(content.contains("\"_links\":{\"self\":{\"href\":\"http://localhost:8888/persons/v1/818\"}}}"));
+
+
+        // Links das páginas
+        assertTrue(content.contains("\"first\":{\"href\":\"http://localhost:8888/persons/v1?direction=asc&page=0&size=15&sort=firstName,asc\"}"));
+        assertTrue(content.contains("\"prev\":{\"href\":\"http://localhost:8888/persons/v1?direction=asc&page=0&size=15&sort=firstName,asc\"}"));
+        assertTrue(content.contains("\"self\":{\"href\":\"http://localhost:8888/persons/v1?page=1&size=15&direction=asc\"}"));
+        assertTrue(content.contains("\"next\":{\"href\":\"http://localhost:8888/persons/v1?direction=asc&page=2&size=15&sort=firstName,asc\"}"));
+        assertTrue(content.contains("\"last\":{\"href\":\"http://localhost:8888/persons/v1?direction=asc&page=66&size=15&sort=firstName,asc\"}"));
+
+
+
+        // Informação das páginas
+        assertTrue(content.contains("\"page\":{\"size\":15,\"totalElements\":1001,\"totalPages\":67,\"number\":1}"));
+
+
     }
 
 

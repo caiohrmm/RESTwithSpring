@@ -349,19 +349,62 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
     @Test
     @Order(8)
     public void testFindAllWithoutToken() throws IOException {
-        mockPerson();
 
         // O TestContainers le as migrations e cria o banco de testes de acordo com elas.
         // Content chega em lista.
 
         // Salvo o conteúdo da página em uma variável
         given().spec(specificationWithoutToken)
-                .contentType(APPLICATION_XML)
-                .accept(APPLICATION_XML)
+                .contentType(APPLICATION_YML)
+                .accept(APPLICATION_YML)
                 .when()
                 .get()
                 .then()
                 .statusCode(403);
+    }
+
+    @Test
+    @Order(9)
+    public void testHATEOAS() throws IOException {
+
+        // O TestContainers le as migrations e cria o banco de testes de acordo com elas.
+        // Content chega em lista.
+
+        // Salvo o conteúdo da página em uma variável
+        var content =
+                given().spec(specification)
+                        .contentType(APPLICATION_YML)
+                        .accept(APPLICATION_YML)
+                        .queryParams("page", 1 , "size", 15, "direction", "asc")
+                        .when()
+                        .get()
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body().asString();
+
+        // Links hateoas das persons
+        assertTrue(content.contains("links:\n" + "  - rel: \"self\"\n" + "    href: \"http://localhost:8888/persons/v1/679\"\n" + "  links: []"));
+        assertTrue(content.contains("links:\n" + "  - rel: \"self\"\n" + "    href: \"http://localhost:8888/persons/v1/768\"\n" + "  links: []"));
+        assertTrue(content.contains("links:\n" + "  - rel: \"self\"\n" + "    href: \"http://localhost:8888/persons/v1/303\"\n" + "  links: []"));
+        assertTrue(content.contains("links:\n" + "  - rel: \"self\"\n" + "    href: \"http://localhost:8888/persons/v1/44\"\n" + "  links: []"));
+
+
+
+        // Links das páginas
+        assertTrue(content.contains("- rel: \"first\"\n" + "  href: \"http://localhost:8888/persons/v1?direction=asc&page=0&size=15&sort=firstName,asc\""));
+        assertTrue(content.contains("- rel: \"prev\"\n" + "  href: \"http://localhost:8888/persons/v1?direction=asc&page=0&size=15&sort=firstName,asc\""));
+        assertTrue(content.contains("- rel: \"self\"\n" + "  href: \"http://localhost:8888/persons/v1?page=1&size=15&direction=asc\""));
+        assertTrue(content.contains("- rel: \"next\"\n" + "  href: \"http://localhost:8888/persons/v1?direction=asc&page=2&size=15&sort=firstName,asc\""));
+        assertTrue(content.contains("- rel: \"last\"\n" + "  href: \"http://localhost:8888/persons/v1?direction=asc&page=66&size=15&sort=firstName,asc\""));
+
+
+        // Informação das páginas
+        assertTrue(content.contains("page:\n" +
+                "  size: 15\n" +
+                "  totalElements: 1001\n" +
+                "  totalPages: 67\n" +
+                "  number: 1"));
     }
 
     private void mockPerson() {
