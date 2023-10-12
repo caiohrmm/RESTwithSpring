@@ -402,7 +402,7 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
         // Informação das páginas
         assertTrue(content.contains("page:\n" +
                 "  size: 15\n" +
-                "  totalElements: 1002\n" +
+                "  totalElements: 1001\n" +
                 "  totalPages: 67\n" +
                 "  number: 1"));
     }

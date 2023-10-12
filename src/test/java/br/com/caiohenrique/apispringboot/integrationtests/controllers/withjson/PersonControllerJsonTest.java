@@ -384,7 +384,7 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
 
 
         // Informação das páginas
-        assertTrue(content.contains("\"page\":{\"size\":15,\"totalElements\":1002,\"totalPages\":67,\"number\":1}"));
+        assertTrue(content.contains("\"page\":{\"size\":15,\"totalElements\":1001,\"totalPages\":67,\"number\":1}"));
 
 
     }

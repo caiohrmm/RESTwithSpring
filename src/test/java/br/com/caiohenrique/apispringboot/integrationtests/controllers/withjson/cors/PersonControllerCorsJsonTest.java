@@ -237,6 +237,18 @@ public class PersonControllerCorsJsonTest extends AbstractIntegrationTest {
 
     }
 
+    @Test
+    @Order(6)
+    public void testDelete() throws IOException {
+        given()
+                .spec(specification)
+                .pathParam("id", personVO.getId())
+                .when()
+                .delete("{id}")
+                .then()
+                .statusCode(204);
+    }
+
     private void mockPerson() {
         personVO.setFirstName("Caio");
         personVO.setLastName("Henrique");
