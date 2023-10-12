@@ -304,6 +304,50 @@ public class BookControllerJsonTest extends AbstractIntegrationTest {
                 .statusCode(403);
     }
 
+    @Test
+    @Order(8)
+    public void testHATEOAS() throws IOException {
+
+        // O TestContainers le as migrations e cria o banco de testes de acordo com elas.
+        // Content chega em lista.
+
+        // Salvo o conteúdo da página em uma variável
+        var content =
+                given().spec(specification)
+                        .contentType(APPLICATION_JSON)
+                        .queryParams("page", 1 , "size", 15, "direction", "asc")
+                        .when()
+                        .get()
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body().asString();
+
+        // Links hateoas das persons
+        assertTrue(content.contains("\"_links\":{\"self\":{\"href\":\"http://localhost:8888/books/v1/1011\"}}}"));
+        assertTrue(content.contains("\"_links\":{\"self\":{\"href\":\"http://localhost:8888/books/v1/227\"}}}"));
+        assertTrue(content.contains("\"_links\":{\"self\":{\"href\":\"http://localhost:8888/books/v1/15\"}}}"));
+        assertTrue(content.contains("\"_links\":{\"self\":{\"href\":\"http://localhost:8888/books/v1/951\"}}}"));
+        assertTrue(content.contains("\"_links\":{\"self\":{\"href\":\"http://localhost:8888/books/v1/574\"}}}"));
+
+
+
+
+        // Links das páginas
+        assertTrue(content.contains("\"first\":{\"href\":\"http://localhost:8888/books/v1?direction=asc&page=0&size=15&sort=author,asc\"}"));
+        assertTrue(content.contains("\"prev\":{\"href\":\"http://localhost:8888/books/v1?direction=asc&page=0&size=15&sort=author,asc\"}"));
+        assertTrue(content.contains("\"self\":{\"href\":\"http://localhost:8888/books/v1?page=1&size=15&direction=asc\"}"));
+        assertTrue(content.contains("\"next\":{\"href\":\"http://localhost:8888/books/v1?direction=asc&page=2&size=15&sort=author,asc\"}"));
+        assertTrue(content.contains("\"last\":{\"href\":\"http://localhost:8888/books/v1?direction=asc&page=67&size=15&sort=author,asc\"}"));
+
+
+
+        // Informação das páginas
+        assertTrue(content.contains("\"page\":{\"size\":15,\"totalElements\":1016,\"totalPages\":68,\"number\":1}"));
+
+
+    }
+
     private void mockBook() throws ParseException {
         bookVO.setAuthor("Machado de Assis");
         bookVO.setTitle("Memórias Póstumas de Brás Cubas");

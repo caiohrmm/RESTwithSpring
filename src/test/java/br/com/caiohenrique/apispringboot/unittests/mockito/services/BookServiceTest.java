@@ -60,56 +60,6 @@ class BookServiceTest {
         assertEquals(100.0, result.getPrice());
         assertEquals(new Date(1630738800000L), result.getLaunchDate());
     }
-/*
-    @Test
-    void findAllBooks() {
-        List<Book> list = input.mockEntityList();
-
-        when(bookRepository.findAll()).thenReturn(list);
-
-        var people = service.findAllBooks(pageable);
-
-        assertNotNull(people);
-        assertEquals(14, people.size());
-
-        var personOne = people.get(1);
-
-        assertNotNull(personOne);
-        assertNotNull(personOne.getKey());
-        assertNotNull(personOne.getLinks());
-        assertTrue(personOne.toString().contains("links: [</books/v1/1>;rel=\"self\"]"));
-        assertEquals("Author Test1", personOne.getAuthor());
-        assertEquals("Title Test1", personOne.getTitle());
-        assertEquals(100.0, personOne.getPrice());
-        assertEquals(new Date(1630738800000L), personOne.getLaunchDate());
-
-        var personFour = people.get(4);
-
-        assertNotNull(personFour);
-        assertNotNull(personFour.getKey());
-        assertNotNull(personFour.getLinks());
-
-        assertTrue(personFour.toString().contains("links: [</books/v1/4>;rel=\"self\"]"));
-        assertEquals("Author Test4", personFour.getAuthor());
-        assertEquals("Title Test4", personFour.getTitle());
-        assertEquals(100.0, personFour.getPrice());
-        assertEquals(new Date(1630738800000L), personFour.getLaunchDate());
-
-        var personSeven = people.get(7);
-
-        assertNotNull(personSeven);
-        assertNotNull(personSeven.getKey());
-        assertNotNull(personSeven.getLinks());
-
-        assertTrue(personSeven.toString().contains("links: [</books/v1/7>;rel=\"self\"]"));
-        assertEquals("Author Test7", personSeven.getAuthor());
-        assertEquals("Title Test7", personSeven.getTitle());
-        assertEquals(100.0, personSeven.getPrice());
-        assertEquals(new Date(1630738800000L), personSeven.getLaunchDate());
-
-    }
-
- */
 
     @Test
     void createBook() {
